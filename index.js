@@ -1,227 +1,138 @@
 "use strict";
 
-var player1 = {
-  "player": "computer",
-  "marker": "x"
-};
-var player2 = {
-  "player": "human",
-  "marker": "o"
-};
-var whoseTurn = player1;
-var firstMove = false;
-
-// Winning combinations
-var allWinningCombos = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]
-]
-
-var copyOfWinningCombos = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]
-]
-var humanMoves = [];
-var player1Combos = allWinningCombos;
-var player2Combos = allWinningCombos;
-var locationOfCompMove;
-var compMoveHistory = [];
-
-$(document).ready(function() {
-  makeComputerMove();
+// Temporary
+$(document).ready(function () {
+  makeFirstMove();
+  makePlayer2Move(); // Simply enabling functionality of button
 });
 
-var considerMovesArr = [];
+// Temporary
+$(".makeCompMove").click(function () {
+  makePlayer1Move();
+});
 
-function makeComputerMove() {
-  var considerThisMove;
-  if (!firstMove && player1.player === "computer") {
-    locationOfCompMove = getRandomInt(0, 9);
-    firstMove = true;
+
+var player1 = {
+  "player": "computer",
+  "marker": "x",
+  "moves": []
+};
+
+var player2 = {
+  "player": "human",
+  "marker": "o",
+  "moves": []
+};
+
+var winningCombos = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6]
+]
+
+function makeFirstMove() {
+  var locationOfMove = Math.floor(Math.random() * 9);
+  player1.moves.push(locationOfMove);
+  $("#" + locationOfMove).html(player1.marker);
+  cycleActivePlayer("player1");
+}
+
+function cycleActivePlayer(lastPlayerToGo) {
+  if (scanForWinningCombo(player1.moves)) {
+    $(".messageToPlayer").html("Player 1 is the winner!");
+  } else if (scanForWinningCombo(player2.moves)) {
+    $(".messageToPlayer").html("Player 2 is the winner!");
   } else {
-    var possibleMoves = [];
-    allWinningCombos.forEach(function(combo) {
-      if (combo !== null) {
-        //console.log("All valid winning combos: ", combo); // Shows all currently valid winning combos
-        var oneMove = combo.filter(function(val) {
-          return compMoveHistory.indexOf(val) === -1;
-        });
-        if (oneMove.length < 3) {
-          oneMove.forEach(function(val) {
-            possibleMoves.push(val);
-          });
+    var whoseNext = lastPlayerToGo === "player1" ? "Player 2" : "Player 1";
+    $(".messageToPlayer").html(whoseNext + " , go!");
+  }
+}
+
+function scanForWinningCombo(arrayOfCurrentMoves) {
+  var winner = false;
+  winningCombos.forEach(function (combo) {
+    var winningCombination = combo.every(function (val) {
+      return arrayOfCurrentMoves.indexOf(val) !== -1;
+    });
+    if (winningCombination) {
+      winner = true;
+      $(".messageToPlayer").css("transform", "scale(2)");
+    }
+  });
+  return winner;
+}
+
+// Computer player functionality
+function makePlayer1Move() {
+  var locationOfMove = determineOffensiveMove();
+  if (locationOfMove === undefined) {
+    locationOfMove = determineDefensiveMove();
+  }
+  if (locationOfMove === undefined) {
+    locationOfMove = fillInLastMove();
+  }
+  player1.moves.push(locationOfMove);
+  $("#" + locationOfMove).html(player1.marker);
+  cycleActivePlayer("player1");
+}
+
+function determineOffensiveMove() {
+  var potentialMoves = [];
+  winningCombos.forEach(function (combo) {
+    var validCombination = player1.moves.every(function (val) {
+      return combo.indexOf(val) !== -1;
+    });
+
+    var invalidatedByPlayer2Moves = player2.moves.some(function (val) {
+      return combo.indexOf(val) !== -1;
+    });
+
+    if (validCombination && !invalidatedByPlayer2Moves) {
+      combo.forEach(function (val) {
+        if (player1.moves.indexOf(val) === -1) {
+          potentialMoves.push(val);
         }
-        console.log(possibleMoves);
-        locationOfCompMove = possibleMoves[0];
-      }
-    });
-  }
-
-  var makeMove = false;
-
-  considerMovesArr.push(locationOfCompMove)
-  copyOfWinningCombos.forEach(function(combo) {
-    if (combo.every(function(val) {
-        return considerMovesArr.indexOf(val) !== -1;
-      })) {
-      // locationOfCompMove is good
-      console.log("This will be a winning move!");
-      makeMove = true;
+      });
     }
   });
-  if (makeMove === false) {
-    if (defendFromHumanWin() >= 0) {
-      locationOfCompMove = defendFromHumanWin();
-      humanMoves = [];
-      console.log("Blocked!");
-    }
-  }
-
-  compMoveHistory.push(locationOfCompMove);
-  updateGameboard(player1Moves, locationOfCompMove, "Computer");
-  
-  // Illistrate move
-  $("#" + locationOfCompMove).html(player1.marker);
-  cycleActivePlayer();
+  return potentialMoves[Math.floor(Math.random() * potentialMoves.length)];
 }
 
-function defendFromHumanWin() {
-  // Comp will make a blockMove even if it has the opportunity to win. Need to address this bug.
-
-  var blockMove;
-  // $("td").each(function(td) {
-  //   if ($(this).html() === "o") {
-  //     humanMoves.push(parseInt($(this).attr("id")));
-  //   }
-  // });
-  if (humanMoves.length > 1) {
-    //console.log("Human moves", humanMoves);
-
-    copyOfWinningCombos.forEach(function(combo) {
-      if (humanMoves.every(function(val) {
-          return combo.indexOf(val) !== -1;
-        })) {
-        //   console.log("Human could win with this combo", combo);
-        // Filter out current human moves with completing combo position
-        blockMove = combo.filter(function(val) {
-          return humanMoves.indexOf(val) === -1;
-        });
-        //  console.log(blockMove);
-      }
+function determineDefensiveMove() {
+  var locationOfMove;
+  winningCombos.forEach(function (combo) {
+    var defensiveMove = combo.filter(function (val) {
+      return player2.moves.indexOf(val) === -1;
     });
-  }
-  return blockMove;
-}
-
-function cycleActivePlayer() {
-  if (whoseTurn === player1) {
-    whoseTurn = player2;
-    var message = "Player 2 turn";
-  } else {
-    // Issue with this line?
-    whoseTurn = player1;
-    message = "Player 1 turn";
-    // makeComputerMove();
-  }
-
-  $(".messageToPlayer").html(message);
-}
-
-// Updates available valid moves for computer to make
-function updateAvailableCombos(playerCombos, locationOfMove) {
-  playerCombos.forEach(function(combo) {
-    if (combo !== null) {
-      if (combo.some(function(val) {
-          return val == locationOfMove;
-        })) {
-        playerCombos[playerCombos.indexOf(combo)] = null;
-      }
+    if (defensiveMove.length === 1 && player1.moves.indexOf(defensiveMove[0]) === -1) {
+      locationOfMove = defensiveMove[0];
     }
   });
+  return locationOfMove;
 }
 
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
+function fillInLastMove() {
+  $("td").each(function (td) {
+    if ($(this).html() === "") {
+      return parseInt($(this).attr("id"));
+    }
+  });
+  console.log("Simply selecting the first blank square");
 }
 
 // Human player functionality
-$("td").click(function() {
-  if ($(this).html() === "") {
-    updateAvailableCombos(allWinningCombos, $(this).attr("id"));
-    humanMoves.push(parseInt($(this).attr("id")));
-
-    cycleActivePlayer();
-    updateGameboard(player2Moves, parseInt($(this).attr("id")), "Human");
-    $(this).html(player2.marker);
-  }
-});
-
-var player1Moves = [];
-var player2Moves = [];
-
-function updateGameboard(playerMovesArray, move, player) {
-  playerMovesArray.push(move)
-    // console.log(playerMovesArray);
-  copyOfWinningCombos.forEach(function(combo) {
-
-    if (combo.every(function(val) {
-        return playerMovesArray.indexOf(val) !== -1;
-      })) {
-
-      setTimeout(function() {
-        $(".messageToPlayer").html("The " + player + " is the winner!");
-      }, 250);
+function makePlayer2Move() {
+  $("td").click(function () {
+    if ($(this).html() === "") {
+      var locationOfMove = parseInt($(this).attr("id"));
+      player2.moves.push(locationOfMove);
+      $(this).html(player2.marker);
+      cycleActivePlayer("player2");
     }
   });
 }
-
-function translateIntegerToLocation(integer) {
-  switch (integer) {
-    case 0:
-      return "zero";
-      break;
-    case 1:
-      return "one";
-      break;
-    case 2:
-      return "two";
-      break;
-    case 3:
-      return "three";
-      break;
-    case 4:
-      return "four";
-      break;
-    case 5:
-      return "five"
-      break;
-    case 6:
-      return "six";
-      break;
-    case 7:
-      return "seven";
-      breakl
-    case 8:
-      return "eight";
-      break;
-  }
-}
-
-// Temp button
-$(".makeCompMove").click(function() {
-  makeComputerMove();
-});
