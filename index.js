@@ -1,25 +1,21 @@
 "use strict";
 
-// Temporary
 $(document).ready(function () {
-  makeFirstMove();
-  makePlayer2Move(); // Simply enabling functionality of button
+  setTimeout(makeFirstMove, 350);
 });
 
-// Temporary
-$(".makeCompMove").click(function () {
-  makePlayer1Move();
-});
-
+// Todo: Create UI for player to decide if they want to go first or second, and choose their marker
+// Todo: Create score keeping feature
+// Todo: Create option for two computer opponenets, and option for two human opponents
 
 var player1 = {
-  "player": "computer",
+  "player": "human",
   "marker": "x",
   "moves": []
 };
 
 var player2 = {
-  "player": "human",
+  "player": "computer",
   "marker": "o",
   "moves": []
 };
@@ -35,11 +31,23 @@ var winningCombos = [
   [2, 4, 6]
 ]
 
+$(".resetGame").click(function () {
+  $("td").html("");
+  player1.moves = [];
+  player2.moves = [];
+  setTimeout(makeFirstMove, 350);
+});
+
 function makeFirstMove() {
-  var locationOfMove = Math.floor(Math.random() * 9);
-  player1.moves.push(locationOfMove);
-  $("#" + locationOfMove).html(player1.marker);
-  cycleActivePlayer("player1");
+  if (player1.player === "computer") {
+    var locationOfMove = Math.floor(Math.random() * 9);
+    player1.moves.push(locationOfMove);
+    $("#" + locationOfMove).html(player1.marker);
+    cycleActivePlayer(player1);
+  } else {
+    makePlayerMove(player1);
+    $(".messageToPlayer").html("Player 1, go!");makePlayerMove
+  }
 }
 
 function cycleActivePlayer(lastPlayerToGo) {
@@ -47,9 +55,20 @@ function cycleActivePlayer(lastPlayerToGo) {
     $(".messageToPlayer").html("Player 1 is the winner!");
   } else if (scanForWinningCombo(player2.moves)) {
     $(".messageToPlayer").html("Player 2 is the winner!");
+  } else if (scanForTie()) {
+    $(".messageToPlayer").html("It's a tie!");
   } else {
-    var whoseNext = lastPlayerToGo === "player1" ? "Player 2" : "Player 1";
+    var whoseNext = lastPlayerToGo === player1 ? "Player 2" : "Player 1";
     $(".messageToPlayer").html(whoseNext + " , go!");
+    if (lastPlayerToGo === player1) {
+      setTimeout(function () {
+        makePlayerMove(player2);
+      }, 350);
+    } else {
+      setTimeout(function () {
+        makePlayerMove(player1);
+      }, 350);
+    }
   }
 }
 
@@ -67,34 +86,74 @@ function scanForWinningCombo(arrayOfCurrentMoves) {
   return winner;
 }
 
-// Computer player functionality
-function makePlayer1Move() {
-  var locationOfMove = determineOffensiveMove();
-  if (locationOfMove === undefined) {
-    locationOfMove = determineDefensiveMove();
-  }
-  if (locationOfMove === undefined) {
-    locationOfMove = fillInLastMove();
-  }
-  player1.moves.push(locationOfMove);
-  $("#" + locationOfMove).html(player1.marker);
-  cycleActivePlayer("player1");
+function scanForTie() {
+  var tie = false;
+  var playedLocations = 0;
+  $("td").each(function (td) {
+    if ($(this).text() !== "") {
+      playedLocations++
+      if (playedLocations === 9) {
+        tie = true;
+        $(".messageToPlayer").css("transform", "scale(2)");
+      }
+    }
+  });
+  return tie;
 }
 
-function determineOffensiveMove() {
+function makePlayerMove(playerNumber) {
+  if (playerNumber.player === "human") {
+    makeHumanMove(playerNumber);
+  } else {
+    makeComputerMove(playerNumber);
+  }
+}
+
+function makeHumanMove(playerNumber) {
+  $("td").click(function () {
+    if ($(this).html() === "") {
+      var locationOfMove = parseInt($(this).attr("id"));
+      playerNumber.moves.push(locationOfMove);
+      $(this).html(playerNumber.marker);
+      cycleActivePlayer(playerNumber);
+    }
+  });
+}
+
+function makeComputerMove(playerNumber) {
+  if (playerNumber === player1) {
+    var locationOfMove = determineOffensiveMove(playerNumber);
+    console.log("case 1");
+  }
+
+  if (locationOfMove === undefined) {
+    locationOfMove = determineDefensiveMove(playerNumber);
+    console.log("case 2");
+  }
+  if (locationOfMove === undefined) {
+    locationOfMove = selectTheFirstEmptySquare();
+    console.log("case 3");
+  }
+  playerNumber.moves.push(locationOfMove);
+  $("#" + locationOfMove).html(playerNumber.marker);
+  cycleActivePlayer(playerNumber);
+}
+
+function determineOffensiveMove(currentPlayer) {
+  var otherPlayer = currentPlayer === player1 ? player2 : player1;
   var potentialMoves = [];
   winningCombos.forEach(function (combo) {
-    var validCombination = player1.moves.every(function (val) {
+    var validCombination = currentPlayer.moves.every(function (val) {
       return combo.indexOf(val) !== -1;
     });
 
-    var invalidatedByPlayer2Moves = player2.moves.some(function (val) {
+    var invalidatedByOtherPlayerMoves = otherPlayer.moves.some(function (val) {
       return combo.indexOf(val) !== -1;
     });
 
-    if (validCombination && !invalidatedByPlayer2Moves) {
+    if (validCombination && !invalidatedByOtherPlayerMoves) {
       combo.forEach(function (val) {
-        if (player1.moves.indexOf(val) === -1) {
+        if (currentPlayer.moves.indexOf(val) === -1) {
           potentialMoves.push(val);
         }
       });
@@ -103,36 +162,26 @@ function determineOffensiveMove() {
   return potentialMoves[Math.floor(Math.random() * potentialMoves.length)];
 }
 
-function determineDefensiveMove() {
+function determineDefensiveMove(currentPlayer) {
+  var otherPlayer = currentPlayer === player1 ? player2 : player1;
   var locationOfMove;
   winningCombos.forEach(function (combo) {
     var defensiveMove = combo.filter(function (val) {
-      return player2.moves.indexOf(val) === -1;
+      return otherPlayer.moves.indexOf(val) === -1;
     });
-    if (defensiveMove.length === 1 && player1.moves.indexOf(defensiveMove[0]) === -1) {
+    if (defensiveMove.length === 1 && currentPlayer.moves.indexOf(defensiveMove[0]) === -1) {
       locationOfMove = defensiveMove[0];
     }
   });
   return locationOfMove;
 }
 
-function fillInLastMove() {
+function selectTheFirstEmptySquare() {
+  var locationOfMove;
   $("td").each(function (td) {
     if ($(this).html() === "") {
-      return parseInt($(this).attr("id"));
+      locationOfMove = parseInt($(this).attr("id"));
     }
   });
-  console.log("Simply selecting the first blank square");
-}
-
-// Human player functionality
-function makePlayer2Move() {
-  $("td").click(function () {
-    if ($(this).html() === "") {
-      var locationOfMove = parseInt($(this).attr("id"));
-      player2.moves.push(locationOfMove);
-      $(this).html(player2.marker);
-      cycleActivePlayer("player2");
-    }
-  });
+  return locationOfMove;
 }
