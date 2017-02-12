@@ -9,7 +9,7 @@ $(document).ready(function () {
 // Todo: Create option for two computer opponenets, and option for two human opponents
 
 var player1 = {
-  "player": "human",
+  "player": "computer",
   "marker": "x",
   "moves": []
 };
@@ -35,7 +35,7 @@ $(".resetGame").click(function () {
   $("td").html("");
   player1.moves = [];
   player2.moves = [];
-  setTimeout(makeFirstMove, 350);
+  setTimeout(makeFirstMove, 500);
 });
 
 function makeFirstMove() {
@@ -46,7 +46,7 @@ function makeFirstMove() {
     cycleActivePlayer(player1);
   } else {
     makePlayerMove(player1);
-    $(".messageToPlayer").html("Player 1, go!");makePlayerMove
+    $(".messageToPlayer").html("Player 1, go!");
   }
 }
 
@@ -55,19 +55,20 @@ function cycleActivePlayer(lastPlayerToGo) {
     $(".messageToPlayer").html("Player 1 is the winner!");
   } else if (scanForWinningCombo(player2.moves)) {
     $(".messageToPlayer").html("Player 2 is the winner!");
-  } else if (scanForTie()) {
+  } else if (player1.moves.length + player2.moves.length === 9) {
     $(".messageToPlayer").html("It's a tie!");
+    $(".messageToPlayer").css("transform", "scale(2)");
   } else {
     var whoseNext = lastPlayerToGo === player1 ? "Player 2" : "Player 1";
     $(".messageToPlayer").html(whoseNext + " , go!");
     if (lastPlayerToGo === player1) {
       setTimeout(function () {
         makePlayerMove(player2);
-      }, 350);
+      }, 25);
     } else {
       setTimeout(function () {
         makePlayerMove(player1);
-      }, 350);
+      }, 25);
     }
   }
 }
@@ -84,21 +85,6 @@ function scanForWinningCombo(arrayOfCurrentMoves) {
     }
   });
   return winner;
-}
-
-function scanForTie() {
-  var tie = false;
-  var playedLocations = 0;
-  $("td").each(function (td) {
-    if ($(this).text() !== "") {
-      playedLocations++
-      if (playedLocations === 9) {
-        tie = true;
-        $(".messageToPlayer").css("transform", "scale(2)");
-      }
-    }
-  });
-  return tie;
 }
 
 function makePlayerMove(playerNumber) {
