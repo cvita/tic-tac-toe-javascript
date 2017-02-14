@@ -1,5 +1,9 @@
 "use strict";
 
+// User Story: I can play a game of Tic Tac Toe with the computer.
+// User Story: I can play a game of Tic Tac Toe with the computer.
+// User Story: I can choose whether I want to play as X or O.
+
 // Todo: Create UI for player to decide if they want to go first or second, and choose their marker
 // Todo: Create score keeping feature
 // Todo: Create option for two computer opponenets, and option for two human opponents
@@ -29,13 +33,20 @@ var gameboard = {
     [2, 5, 8],
     [0, 4, 8],
     [2, 4, 6]
-  ]
+  ],
+  "numberOfGames": 0
 }
-
-var numberOfGames = 0;
 
 $(document).ready(function () {
   cycleActivePlayer(player2); // Creates condition to cue Player 1
+});
+
+$(".stepThroughNextMove").click(function () {
+  if ($(".messageToPlayer").html() === "Player 2, go!") {
+    makeComputerMove(player2);
+  } else {
+    makeComputerMove(player1);
+  }
 });
 
 $(".playAgain").click(function () {
@@ -47,54 +58,41 @@ $(".playAgain").click(function () {
 });
 
 function playAgain() {
-  if (numberOfGames < 399) {
+  if (gameboard.numberOfGames < 100) {
     player1.moves = [];
     player2.moves = [];
     gameboard.availablePositions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
     $("td").html("");
     cycleActivePlayer(player2); // Creates condition to cue Player 1
   } else {
-    console.log(player1.score + " to " + player2.score + ", out of " + numberOfGames + " games");
+    console.log(player1.score + " to " + player2.score + ", out of " + gameboard.numberOfGames + " games");
   }
 }
 
-$(".stepThroughNextMove").click(function () {
-  if ($(".messageToPlayer").html() === "Player 2, go!") {
-    makeComputerMove(player2);
-  } else {
-    makeComputerMove(player1);
-  }
-});
-
 function scanForWinningCombo(playerNumber) {
   for (var i = 0; i < gameboard.winningCombos.length; i++) {
-    var aWinningCombination = gameboard.winningCombos[i].every(function (val) {
+    var combo = gameboard.winningCombos[i];
+    var aWinningCombination = combo.every(function (val) {
       return playerNumber.moves.indexOf(val) !== -1;
     });
-
     if (aWinningCombination) {
-      numberOfGames++;
+      gameboard.numberOfGames++;
       playerNumber.score++;
       var losingPlayer = playerNumber === player1 ? player2 : player1;
       $(".messageToPlayer").html(playerNumber.score + " / " + losingPlayer.score + "<br>");
-      $(".messageToPlayer").append(playerNumber.marker + " is the winner!<br>Game no. " + numberOfGames);
+      $(".messageToPlayer").append(playerNumber.marker + " is the winner!<br>Game no. " + gameboard.numberOfGames);
       $(".messageToPlayer").css("transform", "scale(1.5)");
-      console.log("x", player1.moves, "o", player2.moves);
-      console.log(gameboard.availablePositions);
-      playAgain();
+      //playAgain();
       break;
     }
-
-    if (i === gameboard.winningCombos.length - 1) {
-      if (player1.moves.length + player2.moves.length === 9) {
-        numberOfGames++;
-        $(".messageToPlayer").html("It's a tie!<br>Game no. " + numberOfGames);
-        $(".messageToPlayer").css("transform", "scale(1.5)");
-        playAgain();
-      } else {
-        cycleActivePlayer(playerNumber);
-      }
-    }
+  }
+  if (player1.moves.length + player2.moves.length === 9) {
+    gameboard.numberOfGames++;
+    $(".messageToPlayer").html("It's a tie!<br>Game no. " + gameboard.numberOfGames);
+    $(".messageToPlayer").css("transform", "scale(1.5)");
+    playAgain();
+  } else {
+    cycleActivePlayer(playerNumber);
   }
 }
 
@@ -119,7 +117,7 @@ function cycleActivePlayer(lastPlayerToGo) {
 function enableHumanMove(playerNumber) {
   $("td").click(function () {
     if ($(this).html() === "") {
-      var locationOfMove = parseInt($(this).attr("id"));
+      var locationOfMove = $(this).index("td");
       gameboard.availablePositions[locationOfMove] = null;
       playerNumber.moves.push(locationOfMove);
       $(this).html(playerNumber.marker);
@@ -132,86 +130,60 @@ function makeComputerMove(playerNumber) {
   if (player1.moves.length === 0) {
     var locationOfMove = Math.floor(Math.random() * 9);
     // console.log("Random: ", playerNumber.marker, " ", locationOfMove);
-  }
-
-  if (player1.moves.length === 1 && playerNumber === player1) {
+  } else {
     locationOfMove = determineOffensiveMove(playerNumber);
     // console.log("Offensive: ", playerNumber.marker, " ", locationOfMove);
   }
-
   if (locationOfMove === undefined) {
     locationOfMove = determineDefensiveMove(playerNumber);
     // console.log("Deffensive: ", playerNumber.marker, " ", locationOfMove);
   }
-
   if (locationOfMove === undefined) {
     locationOfMove = selectTheFirstEmptySquare();
     // console.log("First empty square", playerNumber.marker, " ", locationOfMove);
   }
-
   gameboard.availablePositions[locationOfMove] = null;
   playerNumber.moves.push(locationOfMove);
-  $("#" + locationOfMove).html(playerNumber.marker);
+  $("td").eq(locationOfMove).html(playerNumber.marker);
   scanForWinningCombo(playerNumber);
 }
 
 function determineOffensiveMove(currentPlayer) {
   var otherPlayer = currentPlayer === player1 ? player2 : player1;
-  var locationOfMove;
-  gameboard.winningCombos.forEach(function (combo) {
-
-    // None of the other players moves are included in this combo
+  for (var i = 0; i < gameboard.winningCombos.length; i++) {
+    var combo = gameboard.winningCombos[i];
     var invalidatedByOtherPlayerMoves = otherPlayer.moves.some(function (val) {
       return combo.indexOf(val) !== -1;
     });
-
-    if (!invalidatedByOtherPlayerMoves) {
-      // All of players current moves are included in this combo
-      var validCombination = currentPlayer.moves.every(function (val) {
-        return combo.indexOf(val) !== -1;
-      });
-
-      if (validCombination) {
-        var possibleMoves = combo.filter(function (val) {
-          return currentPlayer.moves.indexOf(val) === -1;
-        });
-
-        locationOfMove = possibleMoves.find(function (val) {
-          return gameboard.availablePositions[val] !== null;
-        });
-
-        if (gameboard.availablePositions[locationOfMove] === null) {
-          console.log("Bug here", locationOfMove);
-        }
-
-      }
+    if (invalidatedByOtherPlayerMoves) {
+      continue;
     }
-  });
-  return locationOfMove; // Confirmed this will allow a value of 0
+    var missingValuesFromWinningCombo = combo.filter(function (val) {
+      return currentPlayer.moves.indexOf(val) === -1;
+    });
+    if (missingValuesFromWinningCombo.length === 1) {
+      return missingValuesFromWinningCombo[0];
+    }
+  }
 }
 
 function determineDefensiveMove(currentPlayer) {
   var otherPlayer = currentPlayer === player1 ? player2 : player1;
   for (var i = 0; i < gameboard.winningCombos.length; i++) {
-    var defensiveMoves = gameboard.winningCombos[i].filter(function (val) {
+    var combo = gameboard.winningCombos[i];
+    var defensiveMoves = combo.filter(function (val) {
       return otherPlayer.moves.indexOf(val) === -1;
     });
-
     if (defensiveMoves.length === 1 && gameboard.availablePositions[defensiveMoves[0]] !== null) {
-      var idealMove = defensiveMoves[0];
-    } else if (defensiveMoves.length === 2) {
+      return defensiveMoves[0];
+    }
+    if (defensiveMoves.length === 2) {
       var secondBestMove = defensiveMoves.find(function (val) {
         return gameboard.availablePositions.indexOf(val) !== -1;
       });
     }
   }
-  if (idealMove >= 0) {
-   // console.log("returning idealMove");
-    return idealMove;
-  } else {
-   // console.log("returning secondBest");
-    return secondBestMove;
-  }
+  return secondBestMove;
 }
 
 function selectTheFirstEmptySquare() {
