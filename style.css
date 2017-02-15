@@ -1,24 +1,26 @@
 body {
-  margin: 5%;
+  margin: 4%;
   background: #bce3dc;
   text-align: center;
   font-size: 16px;
   font-family: georgia;
 }
 
+
 table {
   margin: auto;
   border-collapse: collapse;
-  font-size: 9em;
-  text-align: center;
-  text-transform: capitalize;
-  color: white;
 }
 
-table td {
-  height: 1.25em;
-  width: 1.25em;
-  border: 0.04em solid grey;
+tr {
+  height: 120%;
+  /*background: red;*/
+}
+
+td {
+  height: 15em;
+  line-height: 0;
+  border: 0.4em solid grey;
 }
 
  table tr:first-child td {
@@ -35,4 +37,9 @@ table tr td:first-child {
 
 table tr:last-child td {
   border-bottom: 0;
+}
+
+canvas {
+  height: 100%;
+  /*background: pink;*/
 }
