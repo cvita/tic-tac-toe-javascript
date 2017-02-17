@@ -1,22 +1,14 @@
 "use strict";
 
-// User Story: I can play a game of Tic Tac Toe with the computer.
-// User Story: I can play a game of Tic Tac Toe with the computer.
-// User Story: I can choose whether I want to play as X or O.
-
-// Todo: Create UI for player to decide if they want to go first or second, and choose their marker
-// Todo: Create score keeping feature
-// Todo: Create option for two computer opponenets, and option for two human opponents
-
 var player1 = {
-  "player": "computer",
+  "player": undefined,
   "marker": "x",
   "moves": [],
   "score": 0
 };
 
 var player2 = {
-  "player": "human",
+  "player": undefined,
   "marker": "o",
   "moves": [],
   "score": 0
@@ -34,49 +26,62 @@ var gameboard = {
     [0, 4, 8],
     [2, 4, 6]
   ],
-  "numberOfGames": 0
+  "numberOfGames": 0,
+  "currentPlayer": player2 // Creates condition, which prompts Player 1 for game's first move
 }
-
 
 $(document).ready(function () {
   var scaledHeight = Math.floor($(window).width() * 0.25);
   if (scaledHeight > 225) {
     scaledHeight = 225;
   }
-  $("td").css("height", scaledHeight + "px");
+  $(".gameSquare").css("height", scaledHeight + "px");
   var canvasHeight = $("canvas").css("height");
   $("canvas").css("width", canvasHeight);
-  cycleActivePlayer(player2); // Creates condition to cue Player 1
-  enableHumanMove(player2); // Todo: Human can only move when it's their turn
 });
 
-$(".stepThroughNextMove").click(function () {
-  if ($(".messageToPlayer").html() === "Player 2, go!") {
-    makeComputerMove(player2);
-  } else {
-    makeComputerMove(player1);
+$(".radio").click(function () {
+  if ($("#player1Human").prop("checked")) {
+    player1.player = "human";
+  }
+  if ($("#player1Computer").prop("checked")) {
+    player1.player = "computer";
+  }
+  if ($("#player2Human").prop("checked")) {
+    player2.player = "human";
+  }
+  if ($("#player2Computer").prop("checked")) {
+    player2.player = "computer";
+  }
+  if (player1.player && player2.player) {
+    $(".startGame").removeClass("disabled");
   }
 });
 
-$(".playAgain").click(function () {
-  player1.moves = [];
-  player2.moves = [];
-  gameboard.availablePositions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-  $("td").html("");
-  cycleActivePlayer(player2);
-});
-
-function playAgain() {
-  if (gameboard.numberOfGames < 10) {
-    player1.moves = [];
-    player2.moves = [];
-    gameboard.availablePositions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-    $("td").html("");
-    cycleActivePlayer(player2); // Creates condition to cue Player 1
-  } else {
-    console.log(player1.score + " to " + player2.score + ", out of " + gameboard.numberOfGames + " games");
+$(".startGame").click(function () {
+  if (!$(this).hasClass("disabled")) {
+    $(".dialogueBox").css("box-shadow", "none");
+    $(".introUtility").slideUp("slow", function () {
+      $(".dialogueBox").css("left", "18em");
+      $(".dialogueBox").css("width", "16em");
+      $(".dialogueBox").css("opacity", "0.8");
+      $(".dialogueBox").css("border-radius", "2em");
+      $(".dialogueBox").css("color", "white").css("letter-spacing", "0.1em");
+      setTimeout(function () {
+        $(".scoreboard").fadeIn("fast", function () {
+          $(".gameSquare").css("border-color", "grey");
+        });
+        if (player1.player === "human") {
+          enableHumanMove(player1);
+        }
+        if (player2.player === "human") {
+          enableHumanMove(player2);
+        }
+        cycleActivePlayer();
+      }, 1600);
+    });
   }
-}
+});
 
 function scanForWinningCombo(playerNumber) {
   var aWinningCombination;
@@ -89,33 +94,53 @@ function scanForWinningCombo(playerNumber) {
       gameboard.numberOfGames++;
       playerNumber.score++;
       var losingPlayer = playerNumber === player1 ? player2 : player1;
-      // Todo: highlight the winning combo on the gameboard
-      $(".messageToPlayer").html(playerNumber.score + " / " + losingPlayer.score + "<br>");
-      $(".messageToPlayer").append(playerNumber.marker + " is the winner!<br>Game no. " + gameboard.numberOfGames);
-      $(".messageToPlayer").css("transform", "scale(1.5)");
-      //playAgain();
+      $(".messageToPlayer").html(
+        playerNumber.marker.toUpperCase() + "'s win!<br>" +
+        playerNumber.marker.toUpperCase() + "'s " + playerNumber.score + " to " +
+        losingPlayer.marker.toUpperCase() + "'s " + losingPlayer.score + "<br>" +
+        "game no. " + gameboard.numberOfGames
+      );
+      $(".gameSquare").css("border-color", "white");
+      $(".playAgain").show();
       break;
+      // Todo: highlight the winning combo on the gameboard
     }
   }
-
   if (player1.moves.length + player2.moves.length === 9) {
     gameboard.numberOfGames++;
-    $(".messageToPlayer").html("It's a tie!<br>Game no. " + gameboard.numberOfGames);
-    $(".messageToPlayer").css("transform", "scale(1.5)");
-    //playAgain();
+    $(".messageToPlayer").html("It's a tie!<br>" +
+      player1.marker.toUpperCase() + "'s " + player1.score + " to " +
+      player2.marker.toUpperCase() + "'s " + player2.score + "<br>" +
+      "game no. " + gameboard.numberOfGames
+    );
+    $(".gameSquare").css("border-color", "white");
+    $(".playAgain").show();
   } else if (!aWinningCombination) {
-    cycleActivePlayer(playerNumber);
+    cycleActivePlayer();
   }
 }
 
-function cycleActivePlayer(lastPlayerToGo) {
-  if (lastPlayerToGo === player1) {
-    $(".messageToPlayer").html("Player 2, go!");
+$(".playAgain").click(function () {
+  $(this).hide();
+  $(".gameSquare").css("border-color", "grey");
+  player1.moves = [];
+  player2.moves = [];
+  gameboard.availablePositions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  gameboard.currentPlayer = player2;
+  clearAllCanvasElements();
+  cycleActivePlayer();
+});
+
+function cycleActivePlayer() {
+  if (gameboard.currentPlayer === player1) {
+    $(".messageToPlayer").html("O's, go!");
+    gameboard.currentPlayer = player2;
     if (player2.player === "computer") {
       makeComputerMove(player2);
     }
   } else {
-    $(".messageToPlayer").html("Player 1, go!");
+    $(".messageToPlayer").html("X's, go!");
+    gameboard.currentPlayer = player1;
     if (player1.player === "computer") {
       makeComputerMove(player1);
     }
@@ -124,17 +149,19 @@ function cycleActivePlayer(lastPlayerToGo) {
 
 function enableHumanMove(playerNumber) {
   $("td").click(function () {
-    if ($(this).text() === "") {
-      var locationOfMove = $(this).index("td");
+    var locationOfMove = $(this).index("td");
+    if (gameboard.availablePositions[locationOfMove] !== null) {
       gameboard.availablePositions[locationOfMove] = null;
-      playerNumber.moves.push(locationOfMove);
-      // $(this).html(playerNumber.marker);
-      if (playerNumber === player1) {
+      var currentPlayer = gameboard.currentPlayer;
+      currentPlayer.moves.push(locationOfMove);
+      if (currentPlayer === player1) {
         drawX(locationOfMove);
       } else {
         drawO(locationOfMove);
       }
-      scanForWinningCombo(playerNumber);
+      setTimeout(function () {
+        scanForWinningCombo(gameboard.currentPlayer);
+      }, 900);
     }
   });
 }
@@ -157,13 +184,14 @@ function makeComputerMove(playerNumber) {
   }
   gameboard.availablePositions[locationOfMove] = null;
   playerNumber.moves.push(locationOfMove);
-  //$("td").eq(locationOfMove).html(playerNumber.marker);
   if (playerNumber === player1) {
     drawX(locationOfMove);
   } else {
     drawO(locationOfMove);
   }
-  scanForWinningCombo(playerNumber);
+  setTimeout(function () {
+    scanForWinningCombo(gameboard.currentPlayer);
+  }, 900);
 }
 
 function determineOffensiveMove(currentPlayer) {
@@ -218,7 +246,7 @@ function drawX(locationOfMove) {
   var context = canvas.getContext("2d");
   canvas.width = canvas.height;
   context.lineWidth = $("body").css("font-size").slice(0, -2);
-  context.strokeStyle = "#fff";
+  context.strokeStyle = "#337ab7";
 
   // Width X Height    
   var startPosition = canvas.width * 0.25; // canvas is a square
@@ -256,7 +284,7 @@ function drawO(locationOfMove) {
   var context = canvas.getContext("2d");
   canvas.width = canvas.height;
   context.lineWidth = $("body").css("font-size").slice(0, -2);
-  context.strokeStyle = "#fff";
+  context.strokeStyle = "#f0ad4e";
 
   var centerX = canvas.width * 0.5;
   var centerY = canvas.height * 0.5;
@@ -273,9 +301,18 @@ function drawO(locationOfMove) {
   }
 }
 
+function clearAllCanvasElements() {
+  for (var i = 0; i < gameboard.availablePositions.length; i++) {
+    var canvas = document.getElementsByTagName("canvas")[i];
+    var context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
 
-
-
-
-
-
+// $(".stepThroughNextMove").click(function () {
+//   if ($(".messageToPlayer").html() === "Player 2, go!") {
+//     makeComputerMove(player2);
+//   } else {
+//     makeComputerMove(player1);
+//   }
+// });

@@ -1,26 +1,65 @@
 body {
   margin: 4%;
-  background: #bce3dc;
+  background: #f3f3f3;
   text-align: center;
   font-size: 16px;
-  font-family: georgia;
+  font-family: 'Anton', sans-serif;
+}
+
+.dialogueBox {
+  z-index: 1;
+  position: fixed;
+  width: 34em;
+  min-width: 8em;
+  min-height: 6em;
+  left: 50%;
+  margin-left: -17em;
+  padding: 1.5em;
+  background: #96cbe4;
+  color: #337ab7;
+  box-shadow: 10px 10px 5px grey;
+  transition: 1.5s;
+}
+
+.title {
+  margin-bottom: 0.5em;
+  font-size: 4em;
+  color: white;
+}
+
+.radio {
+  margin-left: 25%;
+  text-align: left;
+}
+
+.versus {
+  margin: 1em 0 2em 0;
+}
+
+.startGame {
+  margin-top: 2em;
+}
+
+.scoreboard {
+  display: none;
+  border-radius: 2em;
+}
+
+.playAgain {
+  display: none;
 }
 
 
 table {
-  margin: auto;
+  margin: 8em auto;
   border-collapse: collapse;
 }
 
-tr {
-  height: 120%;
-  /*background: red;*/
-}
-
-td {
+.gameSquare {
   height: 15em;
   line-height: 0;
-  border: 0.4em solid grey;
+  border: 0.4em solid white;
+  transition: 1s;
 }
 
  table tr:first-child td {

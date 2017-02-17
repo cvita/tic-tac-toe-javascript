@@ -5,40 +5,116 @@
   <meta charset="UTF-8">
   <title>Tic-Tac-Toe in progress</title>
 
+  <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'>
+  <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 
   <!-- -->
 </head>
 
 <body>
-  <h3 class="messageToPlayer"></h3>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
 
-  <table>
-    <tr>
-      <td><canvas></canvas></td>
-      <td><canvas></canvas></td>
-      <td><canvas></canvas></td>
-    </tr>
-    <tr>
-      <td><canvas></canvas></td>
-      <td><canvas></canvas></td>
-      <td><canvas></canvas></td>
-    </tr>
-    <tr>
-      <td><canvas></canvas></td>
-      <td><canvas></canvas></td>
-      <td><canvas></canvas></td>
-    </tr>
-  </table>
+        <div class="dialogueBox">
+          <div class="container">
+
+            <div class="introUtility">
+              <div class="row">
+                <div class="col-md-12">
+                  <h1 class="title">Tic Tac Toe</h1>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-5">
+                  <h3>X's</h3>
+                  <div class="radio">
+                    <label><input type="radio" id="player1Human" name="player1Radio"> Human</label>
+                  </div>
+                  <div class="radio">
+                    <label><input type="radio" id="player1Computer" name="player1Radio"> Computer</label>
+                  </div>
+                </div>
+                <div class="col-sm-2">
+                  <h2 class="versus">Vs.</h4>
+                </div>
+                <div class="col-sm-5">
+                  <h3>O's</h3>
+                  <div class="radio">
+                    <label><input type="radio" id="player2Human" name="player2Radio"> Human</label>
+                  </div>
+                  <div class="radio">
+                    <label><input type="radio" id="player2Computer" name="player2Radio"> Computer</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <button class="startGame btn btn-block btn-primary disabled">Start</button>
+                </div>
+              </div>
+
+            </div>
+            <!-- /introUtility -->
+
+            <div class="scoreboard">
+              <h3 class="messageToPlayer">Player 1, go!</h3>
+              <button class="playAgain btn btn-block btn-primary">Play again</button>
+            </div>
+            <!-- /scoreboard -->
 
 
-  <button class="stepThroughNextMove">Step through next move</button>
-  <button class="playAgain">Play again</button>
+          </div>
+          <!-- /container -->
+        </div>
+        <!-- dialogueBox -->
 
+
+        <table>
+          <tr>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+          </tr>
+          <tr>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+          </tr>
+          <tr>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+          </tr>
+        </table>
+
+
+        <!--<button class="stepThroughNextMove">Step through next move</button>-->
+
+      </div>
+    </div>
+  </div>
 
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
-  <!--<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js'></script>-->
-
   <script src="index.js"></script>
 
 </body>
