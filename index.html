@@ -6,7 +6,7 @@
   <title>Tic-Tac-Toe in progress</title>
 
   <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'>
-  <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Acme|Inconsolata" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 
   <!-- -->
@@ -17,7 +17,7 @@
     <div class="row">
       <div class="col-md-12">
 
-        <div class="dialogueBox">
+        <div class="dialogueBox startScreen">
           <div class="container">
 
             <div class="introUtility">
@@ -30,10 +30,10 @@
                 <div class="col-sm-5">
                   <h3>X's</h3>
                   <div class="radio">
-                    <label><input type="radio" id="player1Human" name="player1Radio"> Human</label>
+                    <label><input type="radio" id="player1Human" class="playerSelection" name="player1Radio"> Human</label>
                   </div>
                   <div class="radio">
-                    <label><input type="radio" id="player1Computer" name="player1Radio"> Computer</label>
+                    <label><input type="radio" id="player1Computer" class="playerSelection" name="player1Radio"> Computer</label>
                   </div>
                 </div>
                 <div class="col-sm-2">
@@ -42,16 +42,17 @@
                 <div class="col-sm-5">
                   <h3>O's</h3>
                   <div class="radio">
-                    <label><input type="radio" id="player2Human" name="player2Radio"> Human</label>
+                    <label><input type="radio" id="player2Human" class="playerSelection" name="player2Radio"> Human</label>
                   </div>
                   <div class="radio">
-                    <label><input type="radio" id="player2Computer" name="player2Radio"> Computer</label>
+                    <label><input type="radio" id="player2Computer" class="playerSelection" name="player2Radio"> Computer</label>
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12">
                   <button class="startGame btn btn-block btn-primary disabled">Start</button>
+                  <a href="https://github.com/VitaC123/Tic-Tac-Toe-javascript">View source on GitHub</a>
                 </div>
               </div>
 
@@ -59,8 +60,20 @@
             <!-- /introUtility -->
 
             <div class="scoreboard">
-              <h3 class="messageToPlayer">Player 1, go!</h3>
-              <button class="playAgain btn btn-block btn-primary">Play again</button>
+              <div class="row">
+                <div class="col-sm-4">
+                  <h3 class="messageToPlayer">Player 1, go!</h3>
+                </div>
+                <div class="col-sm-4">
+                  <h4 class="score"></h4>
+                </div>
+                <div class="col-sm-4">
+                  <div class="btn-group btn-group-sm btn-group-vertical">
+                    <button class="playAgain btn btn-success disabled">Play again</button>
+                    <button class="resetGame btn btn-danger">Reset</button>
+                  </div>
+                </div>
+              </div>
             </div>
             <!-- /scoreboard -->
 

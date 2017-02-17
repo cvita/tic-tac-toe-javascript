@@ -3,22 +3,36 @@ body {
   background: #f3f3f3;
   text-align: center;
   font-size: 16px;
-  font-family: 'Anton', sans-serif;
+  font-family: 'Acme', sans-serif;
 }
 
 .dialogueBox {
   z-index: 1;
   position: fixed;
-  width: 34em;
-  min-width: 8em;
-  min-height: 6em;
+  min-height: 7em;
   left: 50%;
-  margin-left: -17em;
   padding: 1.5em;
   background: #96cbe4;
   color: #337ab7;
-  box-shadow: 10px 10px 5px grey;
   transition: 1.5s;
+}
+
+.startScreen {
+  width: 34em;
+  margin-left: -17em;
+  box-shadow: 10px 10px 5px grey;
+}
+
+.scoreboardScreen {
+  border-radius: 2em;
+  box-shadow: none;
+  opacity: 0.8;
+  color: white;
+  letter-spacing: 0.1em;
+}
+
+.scoreboard {
+  display: none;
 }
 
 .title {
@@ -36,17 +50,36 @@ body {
   margin: 1em 0 2em 0;
 }
 
+.btn {
+  font-size: 1.25em;
+  font-family: 'Acme', sans-serif;
+  letter-spacing: 0.1em;
+}
+
 .startGame {
-  margin-top: 2em;
+  margin: 1.5em 0 0.5em 0;
 }
 
-.scoreboard {
-  display: none;
-  border-radius: 2em;
+
+
+.messageToPlayer {
+  font-size: 2.5em;
+  font-family: 'Acme', sans-serif;
 }
 
-.playAgain {
-  display: none;
+.actionWord {
+  visibility: hidden;
+}
+
+.go {
+  visibility: visible;
+  font-style: italic;
+  transition: 0.3s;
+  color: #5cb85c;
+}
+
+.scoreFont {
+font-family: 'Inconsolata', monospace;
 }
 
 

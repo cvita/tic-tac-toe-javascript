@@ -26,7 +26,7 @@ var gameboard = {
     [0, 4, 8],
     [2, 4, 6]
   ],
-  "numberOfGames": 0,
+  "numberOfGames": 1,
   "currentPlayer": player2 // Creates condition, which prompts Player 1 for game's first move
 }
 
@@ -60,13 +60,11 @@ $(".radio").click(function () {
 
 $(".startGame").click(function () {
   if (!$(this).hasClass("disabled")) {
-    $(".dialogueBox").css("box-shadow", "none");
+    $(this).addClass("disabled");
     $(".introUtility").slideUp("slow", function () {
-      $(".dialogueBox").css("left", "18em");
-      $(".dialogueBox").css("width", "16em");
-      $(".dialogueBox").css("opacity", "0.8");
-      $(".dialogueBox").css("border-radius", "2em");
-      $(".dialogueBox").css("color", "white").css("letter-spacing", "0.1em");
+      $(".dialogueBox").removeClass("startScreen").addClass("scoreboardScreen");
+      $(".dialogueBox").css("width", $("table").width() * 0.9 + "px");
+      $(".dialogueBox").css("margin-left", $("table").width() * -0.45 + "px");
       setTimeout(function () {
         $(".scoreboard").fadeIn("fast", function () {
           $(".gameSquare").css("border-color", "grey");
@@ -77,10 +75,30 @@ $(".startGame").click(function () {
         if (player2.player === "human") {
           enableHumanMove(player2);
         }
+        $(".gameSquare").css("border-color", "grey");
+        player1.moves = [];
+        player2.moves = [];
+        gameboard.availablePositions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+        gameboard.currentPlayer = player2;
+        clearAllCanvasElements();
         cycleActivePlayer();
+        displayScore();
       }, 1600);
     });
   }
+});
+
+$(".resetGame").click(function () {
+  player1.player = null;
+  player2.player = null;
+  $(".scoreboard").fadeOut("fast", function () {
+    $(".gameSquare").css("border-color", "white");
+    $(".dialogueBox").removeClass("scoreboardScreen").addClass("startScreen");
+    $(".playerSelection").prop("checked", false);
+    $(".introUtility").slideDown("slow", function () {
+      clearAllCanvasElements();
+    });
+  });
 });
 
 function scanForWinningCombo(playerNumber) {
@@ -94,57 +112,67 @@ function scanForWinningCombo(playerNumber) {
       gameboard.numberOfGames++;
       playerNumber.score++;
       var losingPlayer = playerNumber === player1 ? player2 : player1;
-      $(".messageToPlayer").html(
-        playerNumber.marker.toUpperCase() + "'s win!<br>" +
-        playerNumber.marker.toUpperCase() + "'s " + playerNumber.score + " to " +
-        losingPlayer.marker.toUpperCase() + "'s " + losingPlayer.score + "<br>" +
-        "game no. " + gameboard.numberOfGames
-      );
+      $(".messageToPlayer").html(playerNumber.marker.toUpperCase() + "'s win!");
+      displayScore();
       $(".gameSquare").css("border-color", "white");
-      $(".playAgain").show();
+      $(".playAgain").removeClass("disabled");
       break;
       // Todo: highlight the winning combo on the gameboard
     }
   }
   if (player1.moves.length + player2.moves.length === 9) {
     gameboard.numberOfGames++;
-    $(".messageToPlayer").html("It's a tie!<br>" +
-      player1.marker.toUpperCase() + "'s " + player1.score + " to " +
-      player2.marker.toUpperCase() + "'s " + player2.score + "<br>" +
-      "game no. " + gameboard.numberOfGames
-    );
+    $(".messageToPlayer").html("It's a tie!");
+    displayScore();
     $(".gameSquare").css("border-color", "white");
-    $(".playAgain").show();
+    $(".playAgain").removeClass("disabled");
   } else if (!aWinningCombination) {
     cycleActivePlayer();
   }
 }
 
+function displayScore() {
+  $(".score").html(
+    "Game no. " + gameboard.numberOfGames + "<br>" +
+    player1.marker.toUpperCase() + "'s <span class='scoreFont'>" + player1.score + "</span>, " +
+    player2.marker.toUpperCase() + "'s <span class='scoreFont'>" + player2.score + "</span>"
+  );
+}
+
 $(".playAgain").click(function () {
-  $(this).hide();
-  $(".gameSquare").css("border-color", "grey");
-  player1.moves = [];
-  player2.moves = [];
-  gameboard.availablePositions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-  gameboard.currentPlayer = player2;
-  clearAllCanvasElements();
-  cycleActivePlayer();
+  if (!$(this).hasClass("disabled")) {
+    $(this).addClass("disabled");
+    $(".gameSquare").css("border-color", "grey");
+    player1.moves = [];
+    player2.moves = [];
+    gameboard.availablePositions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    gameboard.currentPlayer = player2;
+    clearAllCanvasElements();
+    cycleActivePlayer();
+    displayScore();
+  }
 });
 
+
+
 function cycleActivePlayer() {
+  $(".actionWord").removeClass("go");
   if (gameboard.currentPlayer === player1) {
-    $(".messageToPlayer").html("O's, go!");
+    $(".messageToPlayer").html("O's, <span class='actionWord'>go!</span>");
     gameboard.currentPlayer = player2;
     if (player2.player === "computer") {
       makeComputerMove(player2);
     }
   } else {
-    $(".messageToPlayer").html("X's, go!");
+    $(".messageToPlayer").html("X's, <span class='actionWord'>go!</span>");
     gameboard.currentPlayer = player1;
     if (player1.player === "computer") {
       makeComputerMove(player1);
     }
   }
+  setTimeout(function () {
+    $(".actionWord").addClass("go");
+  }, 200);
 }
 
 function enableHumanMove(playerNumber) {
