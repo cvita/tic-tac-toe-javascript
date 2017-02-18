@@ -1,5 +1,5 @@
 body {
-  margin: 4%;
+  margin: 2%;
   background: #f3f3f3;
   text-align: center;
   font-size: 16px;
@@ -14,7 +14,7 @@ body {
   padding: 1.5em;
   background: #96cbe4;
   color: #337ab7;
-  transition: 1.5s;
+  transition: 1s;
 }
 
 .startScreen {
@@ -25,14 +25,18 @@ body {
 
 .scoreboardScreen {
   border-radius: 2em;
-  box-shadow: none;
   opacity: 0.8;
+  box-shadow: 5px 5px 2.5px grey;
   color: white;
   letter-spacing: 0.1em;
 }
 
 .scoreboard {
   display: none;
+}
+
+.score {
+  white-space: nowrap;
 }
 
 .title {
@@ -47,7 +51,7 @@ body {
 }
 
 .versus {
-  margin: 1em 0 2em 0;
+  margin: 0.25em 0 1em 0;
 }
 
 .btn {
@@ -59,8 +63,6 @@ body {
 .startGame {
   margin: 1.5em 0 0.5em 0;
 }
-
-
 
 .messageToPlayer {
   font-size: 2.5em;
@@ -78,13 +80,8 @@ body {
   color: #5cb85c;
 }
 
-.scoreFont {
-font-family: 'Inconsolata', monospace;
-}
-
-
 table {
-  margin: 8em auto;
+  margin: auto;
   border-collapse: collapse;
 }
 
