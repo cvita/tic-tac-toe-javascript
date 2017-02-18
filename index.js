@@ -39,10 +39,14 @@
     },
     determineScaledHeightForGameSquare: function () {
       return new Promise(function (resolve, reject) {
-        var scaledHeight = Math.floor($("body").width() * 0.25);
-        if (scaledHeight > 250) {
+        var scaledHeight = Math.floor($(window).width() * 0.25);
+        if (scaledHeight > $(window).height()) {
+          scaledHeight = Math.floor($(window).height() * 0.1);
+        }
+        if (scaledHeight > 250) { 
           scaledHeight = 250;
         }
+
         if (scaledHeight) {
           resolve(scaledHeight);
         } else {
@@ -100,8 +104,8 @@
       clearGameState();
       $(".introUtility").slideUp("slow", function () {
         $(".dialogueBox").removeClass("startScreen").addClass("scoreboardScreen");
-        $(".dialogueBox").css("width", $("table").width() * 0.9 + "px");
-        $(".dialogueBox").css("margin-left", $("table").width() * -0.45 + "px");
+        // $(".dialogueBox").css("width", $("table").width() * 0.9 + "px");
+        // $(".dialogueBox").css("margin-left", $("table").width() * -0.45 + "px");
         displayScore();
         cycleActivePlayer();
         setTimeout(function () {
@@ -289,7 +293,7 @@
   }
 
   function drawX(canvas, context) {
-    context.strokeStyle = "#337ab7";
+    context.strokeStyle = "#f0ad4e";
     var position1 = canvas.width * 0.25;
     var position2 = canvas.width * 0.75;
     var drawSpeed = 3;
@@ -319,7 +323,7 @@
   }
 
   function drawO(canvas, context) {
-    context.strokeStyle = "#f0ad4e";
+    context.strokeStyle = "#337ab7";
     var centerX = canvas.width * 0.5;
     var centerY = canvas.height * 0.5;
     var radius = canvas.width * 0.25;
