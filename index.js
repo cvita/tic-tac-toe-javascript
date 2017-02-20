@@ -98,16 +98,15 @@
     if (!$(this).hasClass("disabled")) {
       clearGameboardForNewGame();
       gameboard.activeGame = true;
-      $(".introUtility").slideUp("slow", function () {
-        displayScore();
-        $(".scoreboard").fadeIn("fast", function () {
-          $(".gameSquare").css("border-color", "grey");
-          $("canvas").css("visibility", "visible");
-          cycleActivePlayer();
-        });
-      });
+      $(".introUtility").slideUp("slow");
       $(".dialogueBox").removeClass("startScreen").addClass("scoreboardScreen");
-      $(".startGame").addClass("disabled");
+      $(".scoreboard").slideDown("slow", function () {
+        $(".gameSquare").css("border-color", "grey");
+        $("canvas").css("visibility", "visible");
+        displayScore();
+        setTimeout(cycleActivePlayer, 800);
+        $(".startGame").addClass("disabled");
+      });
     }
   });
 
@@ -130,11 +129,11 @@
     player1.score = 0;
     player2.score = 0;
     gameboard.numberOfGames = 0;
-    $(".scoreboard").fadeOut("fast", function () {
-      $(".dialogueBox").removeClass("scoreboardScreen").addClass("startScreen");
+    $(".dialogueBox").removeClass("scoreboardScreen").addClass("startScreen");
+    $(".scoreboard").hide("fast", function () {
       $(".introUtility").slideDown("slow", function () {
-        $(".playAgain").addClass("disabled");
         clearGameboardForNewGame();
+        $(".playAgain").addClass("disabled");
       });
     });
   });
