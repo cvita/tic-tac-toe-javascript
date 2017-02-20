@@ -43,8 +43,8 @@
         if (scaledHeight > $(window).height()) {
           scaledHeight = Math.floor($(window).height() * 0.1);
         }
-        if (scaledHeight > 250) { 
-          scaledHeight = 250;
+        if (scaledHeight > 240) {
+          scaledHeight = 240;
         }
 
         if (scaledHeight) {
@@ -70,12 +70,14 @@
 
   $(document).ready(function () {
     gameboard.adjustGameboardSize(function () { });
+    $("table").css("top", "-" + $(".dialogueBox").height() + "px");
   });
 
   $(window).resize(function () {
     gameboard.adjustGameboardSize(function () {
       if (player1.player && player2.player) {
-        $("table").css("margin-top", $(".dialogueBox").height() + 75 + "px");
+        //$("table").css("margin-top", $(".dialogueBox").height() + 75 + "px");
+        
       }
     });
   });
@@ -100,27 +102,22 @@
 
   $(".startGame").click(function () {
     if (!$(this).hasClass("disabled")) {
-      $(this).addClass("disabled");
       clearGameState();
       $(".introUtility").slideUp("slow", function () {
-        $(".dialogueBox").removeClass("startScreen").addClass("scoreboardScreen");
-        // $(".dialogueBox").css("width", $("table").width() * 0.9 + "px");
-        // $(".dialogueBox").css("margin-left", $("table").width() * -0.45 + "px");
         displayScore();
-        cycleActivePlayer();
-        setTimeout(function () {
-          $(".scoreboard").fadeIn("fast", function () {
-            $("table").css("margin-top", $(".dialogueBox").height() + 75 + "px");
-            $(".gameSquare").css("border-color", "grey");
-          });
-        }, 300);
+        $(".startGame").addClass("disabled");
+        $(".scoreboard").fadeIn("fast", function () {
+          $(".gameSquare").css("border-color", "grey");
+          setTimeout(cycleActivePlayer, 800);
+        });
       });
+      $(".dialogueBox").removeClass("startScreen").addClass("scoreboardScreen");
     }
   });
 
   $(".playAgain").click(function () {
     if (!$(this).hasClass("disabled")) {
-      $(this).addClass("disabled");
+      $(this).addClass("disabled").addClass("btn-info").removeClass("btn-success");
       gameboard.numberOfGames++;
       clearGameState();
       $(".gameSquare").css("border-color", "grey");
@@ -132,6 +129,9 @@
   $(".resetGame").click(function () {
     player1.player = null;
     player2.player = null;
+    player1.score = 0;
+    player2.score = 0;
+    gameboard.numberOfGames = 0;
     $(".scoreboard").fadeOut("fast", function () {
       $(".dialogueBox").removeClass("scoreboardScreen").addClass("startScreen");
       $(".introUtility").slideDown("slow", function () {
@@ -145,6 +145,7 @@
     player2.moves = [];
     gameboard.availablePositions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
     gameboard.currentPlayer = player2;
+    $("input").prop("checked", false);
     clearAllCanvasElements();
     $(".playerSelection").prop("checked", false);
     $(".gameSquare").css("border-color", "white");
@@ -248,7 +249,7 @@
         $(".messageToPlayer").html(gameboard.currentPlayer.marker.toUpperCase() + "'s win!");
         displayScore();
         $(".gameSquare").css("border-color", "white");
-        $(".playAgain").removeClass("disabled");
+        $(".playAgain").removeClass("disabled").removeClass("btn-info").addClass("btn-success");
         break;
       }
     }
@@ -256,7 +257,7 @@
       $(".messageToPlayer").html("It's a tie!");
       displayScore();
       $(".gameSquare").css("border-color", "white");
-      $(".playAgain").removeClass("disabled");
+      $(".playAgain").removeClass("disabled").removeClass("btn-info").addClass("btn-success");
     } else if (!aWinningCombination) {
       cycleActivePlayer();
     }

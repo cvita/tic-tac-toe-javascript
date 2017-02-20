@@ -13,123 +13,121 @@
 </head>
 
 <body>
+<div class="container">
+
   <div class="dialogueBox startScreen">
-    <div class="container">
-      <div class="introUtility">
-        <div class="row">
-          <div class="col-sm-12">
-            <h1 class="title">Tic Tac Toe</h1>
-          </div>
+    <div class="introUtility">
+      <div class="row">
+        <div class="col-md-12">
+          <h1 class="title">Tic Tac Toe</h1>
         </div>
-        <div class="row">
-          <div class="col-sm-5">
-            <h3>X's</h3>
-              <div class="radio">
-                <label class="btn btn-warning"><input type="radio" id="player1Human" class="playerSelection" name="player1Radio"> Human</label>
-              </div>
-              <div class="radio">
-                <label class="btn btn-warning"><input type="radio" id="player1Computer" class="playerSelection" name="player1Radio"> Computer</label>
-              </div>
-          </div>
-          <div class="col-sm-2">
-            <h2 class="versus">Vs.</h4>
-          </div>
-          <div class="col-sm-5">
-            <h3>O's</h3>
-            <div class="radio">
-              <label class="btn btn-primary"><input type="radio" id="player2Human" class="playerSelection" name="player2Radio"> Human</label>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <h2 class="startScreenmarkerX">X's</h2>
+          <div class="radio">
+            <div class="radioBtn-warning">
+              <input type="radio" name="radio" id="player1Human" />
+              <label for="player1Human">Human</label>
             </div>
-            <div class="radio">
-              <label class="btn btn-primary"><input type="radio" id="player2Computer" class="playerSelection" name="player2Radio"> Computer</label>
+            <div class="radioBtn-warning">
+              <input type="radio" name="radio" id="player1Computer" />
+              <label for="player1Computer">Computer</label>
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-sm-12">
-            <button class="startGame btn btn-lg btn-block btn-success disabled">Start</button>
-            <a href="https://github.com/VitaC123/Tic-Tac-Toe-javascript"><button class="viewSource btn btn-link">View source on GitHub</button></a>
+        <div class="col-md-4">
+          <h2 class="versus">Vs.</h4>
           </div>
-        </div>
-
-      </div>
-      <!-- /introUtility -->
-
-      <div class="scoreboard">
-        <div class="row">
-          <div class="col-sm-4">
-            <h4 class="score"></h4>
-          </div>
-          <div class="col-sm-4">
-            <h3 class="messageToPlayer">Player 1, go!</h3>
-          </div>
-          <div class="col-sm-4">
-            <button class="playAgain btn btn-info disabled">Play again</button>
-            <button class="resetGame btn btn-danger">Reset</button>
+          <div class="col-md-4">
+            <h2 class="startScreenmarkerO">O's</h2>
+          <div class="radio">
+            <div class="radioBtn-primary">
+              <input type="radio" name="radio2" id="player2Human" />
+              <label for="player2Human">Human</label>
+            </div>
+            <div class="radioBtn-primary">
+              <input type="radio" name="radio2" id="player2Computer" />
+              <label for="player2Computer">Computer</label>
+            </div>
           </div>
         </div>
       </div>
-      <!-- /scoreboard -->
-
-
+      <div class="row">
+        <div class="col-md-12">
+          <button class="startGame btn btn-lg btn-block btn-success disabled">Start</button>
+          <button class="viewSource btn btn-sm btn-link">
+              <a href="https://github.com/VitaC123/Tic-Tac-Toe-javascript">View source on GitHub</a>
+            </button>
+        </div>
+      </div>
     </div>
-    <!-- /container -->
+    <!-- /introUtility -->
+
+    <div class="scoreboard">
+      <div class="row">
+        <div class="col-sm-4">
+          <h4 class="score"></h4>
+        </div>
+        <div class="col-sm-4">
+          <h3 class="messageToPlayer">Player 1, go!</h3>
+        </div>
+        <div class="col-sm-4">
+          <button class="playAgain btn btn-info disabled">Play again</button>
+          <button class="resetGame btn btn-danger">Reset</button>
+        </div>
+      </div>
+    </div>
+    <!-- /scoreboard -->
+
   </div>
   <!-- dialogueBox -->
 
-
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-
-
-
-
-        <table>
-          <tr>
-            <td class="gameSquare">
-              <canvas></canvas>
-            </td>
-            <td class="gameSquare">
-              <canvas></canvas>
-            </td>
-            <td class="gameSquare">
-              <canvas></canvas>
-            </td>
-          </tr>
-          <tr>
-            <td class="gameSquare">
-              <canvas></canvas>
-            </td>
-            <td class="gameSquare">
-              <canvas></canvas>
-            </td>
-            <td class="gameSquare">
-              <canvas></canvas>
-            </td>
-          </tr>
-          <tr>
-            <td class="gameSquare">
-              <canvas></canvas>
-            </td>
-            <td class="gameSquare">
-              <canvas></canvas>
-            </td>
-            <td class="gameSquare">
-              <canvas></canvas>
-            </td>
-          </tr>
-        </table>
-
-
-        <!--<button class="stepThroughNextMove">Step through next move</button>-->
-
-      </div>
+  <div class="row">
+    <div class="col-md-12">
+      <table>
+        <tr>
+          <td class="gameSquare">
+            <canvas></canvas>
+          </td>
+          <td class="gameSquare">
+            <canvas></canvas>
+          </td>
+          <td class="gameSquare">
+            <canvas></canvas>
+          </td>
+        </tr>
+        <tr>
+          <td class="gameSquare">
+            <canvas></canvas>
+          </td>
+          <td class="gameSquare">
+            <canvas></canvas>
+          </td>
+          <td class="gameSquare">
+            <canvas></canvas>
+          </td>
+        </tr>
+        <tr>
+          <td class="gameSquare">
+            <canvas></canvas>
+          </td>
+          <td class="gameSquare">
+            <canvas></canvas>
+          </td>
+          <td class="gameSquare">
+            <canvas></canvas>
+          </td>
+        </tr>
+      </table>
     </div>
   </div>
 
+</div>
+<!-- /container -->
+
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
   <script src="index.js"></script>
-
 </body>
 
 </html>
