@@ -16,6 +16,7 @@
   };
 
   var gameboard = {
+    activeGame: false,
     currentPlayer: player2, // Prompts Player 1 for game's first move
     numberOfGames: 1,
     availablePositions: [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -29,12 +30,11 @@
       [0, 4, 8],
       [2, 4, 6]
     ],
-    adjustGameboardSize: function (callback) {
+    adjustGameboardSize: function () {
       this.determineScaledHeightForGameSquare().then(function (result) {
         return gameboard.applyScaledHeightToGameSquare(result);
       }).then(function (result) {
         gameboard.scaleCanvasWidthToMatchHeight(result);
-        callback();
       });
     },
     determineScaledHeightForGameSquare: function () {
@@ -46,7 +46,6 @@
         if (scaledHeight > 240) {
           scaledHeight = 240;
         }
-
         if (scaledHeight) {
           resolve(scaledHeight);
         } else {
@@ -69,17 +68,12 @@
   };
 
   $(document).ready(function () {
-    gameboard.adjustGameboardSize(function () { });
+    gameboard.adjustGameboardSize();
     $("table").css("top", "-" + $(".dialogueBox").height() + "px");
   });
 
   $(window).resize(function () {
-    gameboard.adjustGameboardSize(function () {
-      if (player1.player && player2.player) {
-        //$("table").css("margin-top", $(".dialogueBox").height() + 75 + "px");
-        
-      }
-    });
+    gameboard.adjustGameboardSize();
   });
 
   $(".radio").click(function () {
@@ -102,25 +96,29 @@
 
   $(".startGame").click(function () {
     if (!$(this).hasClass("disabled")) {
-      clearGameState();
+      clearGameboardForNewGame();
+      gameboard.activeGame = true;
       $(".introUtility").slideUp("slow", function () {
         displayScore();
-        $(".startGame").addClass("disabled");
         $(".scoreboard").fadeIn("fast", function () {
           $(".gameSquare").css("border-color", "grey");
-          setTimeout(cycleActivePlayer, 800);
+          $("canvas").css("visibility", "visible");
+          cycleActivePlayer();
         });
       });
       $(".dialogueBox").removeClass("startScreen").addClass("scoreboardScreen");
+      $(".startGame").addClass("disabled");
     }
   });
 
   $(".playAgain").click(function () {
     if (!$(this).hasClass("disabled")) {
       $(this).addClass("disabled").addClass("btn-info").removeClass("btn-success");
+      clearGameboardForNewGame();
       gameboard.numberOfGames++;
-      clearGameState();
+      gameboard.activeGame = true;
       $(".gameSquare").css("border-color", "grey");
+      $("canvas").css("visibility", "visible");
       cycleActivePlayer();
       displayScore();
     }
@@ -135,19 +133,20 @@
     $(".scoreboard").fadeOut("fast", function () {
       $(".dialogueBox").removeClass("scoreboardScreen").addClass("startScreen");
       $(".introUtility").slideDown("slow", function () {
-        clearGameState();
+        $(".playAgain").addClass("disabled");
+        clearGameboardForNewGame();
       });
     });
   });
 
-  function clearGameState() {
+  function clearGameboardForNewGame() {
     player1.moves = [];
     player2.moves = [];
+    gameboard.activeGame = false;
     gameboard.availablePositions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
     gameboard.currentPlayer = player2;
-    $("input").prop("checked", false);
     clearAllCanvasElements();
-    $(".playerSelection").prop("checked", false);
+    $("input").prop("checked", false);
     $(".gameSquare").css("border-color", "white");
   }
 
@@ -160,7 +159,7 @@
   }
 
   $("td").click(function enableHumanMove() {
-    if (gameboard.currentPlayer.player === "human") {
+    if (gameboard.currentPlayer.player === "human" && gameboard.activeGame) {
       var locationOfMove = $(this).index("td");
       if (gameboard.availablePositions[locationOfMove] !== null) {
         gameboard.availablePositions[locationOfMove] = null;
@@ -172,39 +171,41 @@
   });
 
   function makeComputerMove() {
-    var locationOfMove;
-    if (player1.moves.length === 0) {
-      locationOfMove = Math.floor(Math.random() * 9);
-    } else {
-      locationOfMove = determineOffensiveMove(gameboard.currentPlayer);
-    }
-    if (locationOfMove === undefined) {
-      locationOfMove = determineDefensiveMove(gameboard.currentPlayer);
-    }
-    if (locationOfMove === undefined) {
-      locationOfMove = selectTheFirstEmptySquare();
-    }
-    gameboard.availablePositions[locationOfMove] = null;
-    gameboard.currentPlayer.moves.push(locationOfMove);
-    drawMarker(locationOfMove);
-    setTimeout(scanForWinningCombo, 800);
-  }
-
-  function determineOffensiveMove(currentPlayer) {
-    var otherPlayer = currentPlayer === player1 ? player2 : player1;
-    for (var i = 0; i < gameboard.winningCombos.length; i++) {
-      var combo = gameboard.winningCombos[i];
-      var invalidatedByOtherPlayerMoves = otherPlayer.moves.some(function (val) {
-        return combo.indexOf(val) !== -1;
-      });
-      if (invalidatedByOtherPlayerMoves) {
-        continue;
+    if (gameboard.activeGame) {
+      var locationOfMove;
+      if (player1.moves.length === 0) {
+        locationOfMove = Math.floor(Math.random() * 9);
+      } else {
+        locationOfMove = determineOffensiveMove(gameboard.currentPlayer);
       }
-      var missingValuesFromWinningCombo = combo.filter(function (val) {
-        return currentPlayer.moves.indexOf(val) === -1;
-      });
-      if (missingValuesFromWinningCombo.length === 1) {
-        return missingValuesFromWinningCombo[0];
+      if (locationOfMove === undefined) {
+        locationOfMove = determineDefensiveMove(gameboard.currentPlayer);
+      }
+      if (locationOfMove === undefined) {
+        locationOfMove = selectTheFirstEmptySquare();
+      }
+      gameboard.availablePositions[locationOfMove] = null;
+      gameboard.currentPlayer.moves.push(locationOfMove);
+      drawMarker(locationOfMove);
+      scanForWinningCombo();
+    }
+
+    function determineOffensiveMove(currentPlayer) {
+      var otherPlayer = currentPlayer === player1 ? player2 : player1;
+      for (var i = 0; i < gameboard.winningCombos.length; i++) {
+        var combo = gameboard.winningCombos[i];
+        var invalidatedByOtherPlayerMoves = otherPlayer.moves.some(function (val) {
+          return combo.indexOf(val) !== -1;
+        });
+        if (invalidatedByOtherPlayerMoves) {
+          continue;
+        }
+        var missingValuesFromWinningCombo = combo.filter(function (val) {
+          return currentPlayer.moves.indexOf(val) === -1;
+        });
+        if (missingValuesFromWinningCombo.length === 1) {
+          return missingValuesFromWinningCombo[0];
+        }
       }
     }
   }
@@ -245,6 +246,7 @@
         return gameboard.currentPlayer.moves.indexOf(val) !== -1;
       });
       if (aWinningCombination) {
+        gameboard.activeGame = false;
         gameboard.currentPlayer.score++;
         $(".messageToPlayer").html(gameboard.currentPlayer.marker.toUpperCase() + "'s win!");
         displayScore();
@@ -254,6 +256,7 @@
       }
     }
     if (player1.moves.length + player2.moves.length === 9) {
+      gameboard.activeGame = false;
       $(".messageToPlayer").html("It's a tie!");
       displayScore();
       $(".gameSquare").css("border-color", "white");
@@ -270,26 +273,28 @@
       gameboard.currentPlayer = player1;
     }
     if (gameboard.currentPlayer.player === "computer") {
-      setTimeout(makeComputerMove, 600);
+      setTimeout(makeComputerMove, 1100);
     }
     $(".actionWord").removeClass("go");
     $(".messageToPlayer").html(gameboard.currentPlayer.marker.toUpperCase() +
       "'s, <span class='actionWord'>go!</span>");
     setTimeout(function () {
       $(".actionWord").addClass("go");
-    }, 300);
+    }, 400);
   }
 
 
   function drawMarker(locationOfMove) {
-    var canvas = document.getElementsByTagName("canvas")[locationOfMove];
-    var context = canvas.getContext("2d");
-    canvas.width = canvas.height; // Ensure canvas is a square
-    context.lineWidth = $("body").css("font-size").slice(0, -2);
-    if (gameboard.currentPlayer.marker === "x") {
-      drawX(canvas, context);
-    } else {
-      drawO(canvas, context);
+    if (gameboard.activeGame) {
+      var canvas = document.getElementsByTagName("canvas")[locationOfMove];
+      var context = canvas.getContext("2d");
+      canvas.width = canvas.height; // Ensure canvas is a square
+      context.lineWidth = $("body").css("font-size").slice(0, -2);
+      if (gameboard.currentPlayer.marker === "x") {
+        drawX(canvas, context);
+      } else {
+        drawO(canvas, context);
+      }
     }
   }
 
@@ -346,5 +351,6 @@
       var context = canvas.getContext("2d");
       context.clearRect(0, 0, canvas.width, canvas.height);
     }
+    $("canvas").css("visibility", "hidden");
   }
 })();

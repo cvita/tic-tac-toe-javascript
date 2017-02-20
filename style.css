@@ -1,17 +1,18 @@
+/* position / height × width / margin / padding / border / background / font*/
+
 body {
   min-width: 340px;
   background: #f3f3f3;
   text-align: center;
   font-size: 16px;
   font-family: 'Acme', sans-serif;
-  overflow-x: hidden;
 }
 
 .dialogueBox {
-  z-index: 1;
   position: relative;
-  min-height: 15%;
+  z-index: 1;
   left: 50%;
+  min-height: 15%;
   padding: 1.25em;
   background: #2ab7ca;
   color: white;
@@ -22,10 +23,15 @@ body {
   width: 70%;
   top: 3em;
   margin-left: -35%;
-  border-radius: 1em;
   box-shadow: 10px 10px 5px grey;
+  border-radius: 1em;
   opacity: 0.9;
   font-size: 1.15em;
+}
+
+.title {
+  margin-bottom: 0.25em;
+  font-size: 4em;
 }
 
 .startScreenmarkerX {
@@ -36,7 +42,56 @@ body {
   color: #0275d8;
 }
 
+.versus {
+  margin: auto;
+  padding: 0.01em;
+  border-radius: 50%;
+  background: #1f8693;
+  font-size: 2.25em;
+  font-style: italic;
+}
+
+.radio input[type="radio"]:empty {
+  display: none;
+}
+
+.radio label {
+  width: 100%;
+  border: 0.1em solid #1f8693;
+  border-radius: 0.25em;
+}
+
+.radio input[type="radio"]:empty ~ label {
+  line-height: 2.5em;
+  margin: 0.25em auto;
+  cursor: pointer;
+}
+
+.radio input[type="radio"]:not(:checked) ~ label {
+  color: #34919d;
+}
+
+.radio .radioBtn-warning input[type="radio"]:checked ~ label {
+  color: white;
+  background: #f0ad4e;
+}
+
+.radio .radioBtn-primary input[type="radio"]:checked ~ label {
+  color: white;
+  background: #0275d8;
+}
+
+.btn {
+  font-family: 'Acme', sans-serif;
+  letter-spacing: 0.1em;
+}
+
+.startGame {
+  margin: 1.5em 0 0.5em 0;
+}
+
 .viewSource {
+  font-family: menlo, monospace;
   white-space: normal;
 }
 
@@ -58,48 +113,13 @@ body {
   white-space: nowrap;
 }
 
-.playAgain {
-  margin-bottom: 0.5em;
-}
-
-.resetGame {
-  margin-bottom: 0.5em;
-}
-
-.title {
-  margin-bottom: 0.25em;
-  font-size: 4em;
-  color: white;
-}
-
-.versus {
-  margin: auto;
-  padding: 0.01em;
-  border-radius: 50%;
-  background: #1f8693;
-  font-size: 2.25em;
-  font-style: italic;
-}
-
-.btn {
-  font-family: 'Acme', sans-serif;
-  letter-spacing: 0.1em;
-}
-
-.startGame {
-  margin: 1.5em 0 0.5em 0;
-}
-
 .messageToPlayer {
+  visibility: visible;
   padding: 0.05em;
   border-radius: 50%;
   font-size: 3.15em;
   background: #1f8693;
   font-family: 'Acme', sans-serif;
-}
-
-.viewSource {
-  font-family: menlo, monospace;
 }
 
 .actionWord {
@@ -111,6 +131,14 @@ body {
   font-style: italic;
   transition: 0.3s;
   color: #5cb85c;
+}
+
+.playAgain {
+  margin-bottom: 0.5em;
+}
+
+.resetGame {
+  margin-bottom: 0.5em;
 }
 
 table {
@@ -145,40 +173,5 @@ table tr:last-child td {
 
 canvas {
   height: 100%;
-  /*background: pink;*/
-}
-
-.radio input[type="radio"]:empty {
-  display: none;
-}
-
-.radio label {
-  width: 100%;
-  border-radius: 0.25em;
-  border: 0.1em solid #1f8693;
-}
-
-.radio input[type="radio"]:empty ~ label {
-  position: relative;
-  line-height: 2.5em;
-  margin: 0.25em auto;
   cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.radio input[type="radio"]:not(:checked) ~ label {
-  color: #34919d;
-}
-
-.radio .radioBtn-warning input[type="radio"]:checked ~ label {
-  color: white;
-  background: #f0ad4e;
-}
-
-.radio .radioBtn-primary input[type="radio"]:checked ~ label {
-  color: white;
-  background: #0275d8;
 }
