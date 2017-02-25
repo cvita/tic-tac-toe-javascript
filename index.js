@@ -134,6 +134,7 @@
       $(".introUtility").slideDown("slow", function () {
         clearGameboardForNewGame();
         $(".playAgain").addClass("disabled");
+        $(".messageToPlayer").html("X's, <span class='actionWord'>go!</span>");
       });
     });
   });
@@ -191,12 +192,14 @@
 
     function determineOffensiveMove(currentPlayer) {
       var otherPlayer = currentPlayer === player1 ? player2 : player1;
-      for (var i = 0; i < gameboard.winningCombos.length; i++) {
-        var combo = gameboard.winningCombos[i];
-        var invalidatedByOtherPlayerMoves = otherPlayer.moves.some(function (val) {
+      var invalidatedByOtherPlayerMoves = function (combo) {
+        return otherPlayer.moves.some(function (val) {
           return combo.indexOf(val) !== -1;
         });
-        if (invalidatedByOtherPlayerMoves) {
+      };
+      for (var i = 0; i < gameboard.winningCombos.length; i++) {
+        var combo = gameboard.winningCombos[i];
+        if (invalidatedByOtherPlayerMoves(combo)) {
           continue;
         }
         var missingValuesFromWinningCombo = combo.filter(function (val) {
@@ -312,17 +315,17 @@
       }, incrementToPos2 * drawSpeed);
     }
 
-    var position3 = position2;
-    var position4 = position1;
+    var pos1Copy = position1;
+    var pos2Copy = position2;
 
     for (incrementToPos2 = position1; incrementToPos2 < position2; incrementToPos2++) {
       setTimeout(function () {
         context.beginPath();
         context.moveTo(position1, position2);
-        context.lineTo(position4, position3);
+        context.lineTo(pos1Copy, pos2Copy);
         context.stroke();
-        position3--;
-        position4++;
+        pos1Copy++;
+        pos2Copy--;
       }, incrementToPos2 * drawSpeed);
     }
   }
