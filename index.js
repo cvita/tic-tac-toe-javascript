@@ -34,18 +34,17 @@
       this.determineScaledHeightForGameSquare().then(function (result) {
         return gameboard.applyScaledHeightToGameSquare(result);
       }).then(function (result) {
-        gameboard.scaleCanvasWidthToMatchHeight(result);
+        gameboard.applyScaledHeightToCanvas(result);
       });
     },
     determineScaledHeightForGameSquare: function () {
       return new Promise(function (resolve, reject) {
-        var scaledHeight = Math.floor($(window).height() * 0.23);
+        var scaledHeight = Math.floor($(window).height() * 0.25);
+        if ($(".scoreboardScreen").height()) {
+          scaledHeight = scaledHeight - Math.ceil($(".scoreboardScreen").height() / 3);
+        }
         if (scaledHeight * 4 > $(window).width()) {
           scaledHeight = Math.floor($(window).width() * 0.25);
-          console.log("Adjusting height based on width");
-        }
-        if (scaledHeight > 240) {
-          scaledHeight = 240;
         }
         if (scaledHeight) {
           resolve(scaledHeight);
@@ -60,7 +59,7 @@
         resolve(scaledHeight);
       });
     },
-    scaleCanvasWidthToMatchHeight: function (scaledHeight) {
+    applyScaledHeightToCanvas: function (scaledHeight) {
       return new Promise(function (resolve, reject) {
         $("canvas").width(scaledHeight);
         resolve("Resized");
@@ -70,7 +69,6 @@
 
   $(document).ready(function () {
     gameboard.adjustGameboardSize();
-    $("table").css("top", "-" + $(".dialogueBox").height() + "px");
   });
 
   $(window).resize(function () {
@@ -101,10 +99,11 @@
       gameboard.activeGame = true;
       $(".introUtility").slideUp("slow");
       $(".dialogueBox").removeClass("startScreen").addClass("scoreboardScreen");
-      $(".scoreboard").slideDown("slow", function () {
+      $(".scoreboardUtility").slideDown("slow", function () {
         $(".gameSquare").css("border-color", "grey");
         $("canvas").css("visibility", "visible");
         displayScore();
+        gameboard.adjustGameboardSize();
         setTimeout(cycleActivePlayer, 800);
         $(".startGame").addClass("disabled");
       });
@@ -131,7 +130,7 @@
     player2.score = 0;
     gameboard.numberOfGames = 0;
     $(".dialogueBox").removeClass("scoreboardScreen").addClass("startScreen");
-    $(".scoreboard").hide("fast", function () {
+    $(".scoreboardUtility").hide("fast", function () {
       $(".introUtility").slideDown("slow", function () {
         clearGameboardForNewGame();
         $(".playAgain").addClass("disabled");
@@ -251,8 +250,8 @@
       if (aWinningCombination) {
         gameboard.activeGame = false;
         gameboard.currentPlayer.score++;
-        $(".messageToPlayer").html(gameboard.currentPlayer.marker.toUpperCase() + "'s win!");
         displayScore();
+        $(".messageToPlayer").html(gameboard.currentPlayer.marker.toUpperCase() + "'s win!");
         $(".gameSquare").css("border-color", "white");
         $(".playAgain").removeClass("disabled").removeClass("btn-info").addClass("btn-success");
         break;
@@ -260,8 +259,8 @@
     }
     if (player1.moves.length + player2.moves.length === 9) {
       gameboard.activeGame = false;
-      $(".messageToPlayer").html("It's a tie!");
       displayScore();
+      $(".messageToPlayer").html("It's a tie!");
       $(".gameSquare").css("border-color", "white");
       $(".playAgain").removeClass("disabled").removeClass("btn-info").addClass("btn-success");
     } else if (!aWinningCombination) {
@@ -276,14 +275,14 @@
       gameboard.currentPlayer = player1;
     }
     if (gameboard.currentPlayer.player === "computer") {
-      setTimeout(makeComputerMove, 1100);
+      setTimeout(makeComputerMove, 1150);
     }
-    $(".actionWord").removeClass("go");
+    $(".actionWord").removeClass("actionWordVisible");
     $(".messageToPlayer").html(gameboard.currentPlayer.marker.toUpperCase() +
       "'s, <span class='actionWord'>go!</span>");
     setTimeout(function () {
-      $(".actionWord").addClass("go");
-    }, 400);
+      $(".actionWord").addClass("actionWordVisible");
+    }, 300);
   }
 
 
@@ -291,60 +290,57 @@
     if (gameboard.activeGame) {
       var canvas = document.getElementsByTagName("canvas")[locationOfMove];
       var context = canvas.getContext("2d");
-      canvas.width = canvas.height; // Ensure canvas is a square
+      canvas.width = canvas.height; // Ensures canvas is a square
       context.lineWidth = $("body").css("font-size").slice(0, -2);
       if (gameboard.currentPlayer.marker === "x") {
+        context.strokeStyle = "#f0ad4e";
         drawX(canvas, context);
       } else {
+        context.strokeStyle = "#337ab7";
         drawO(canvas, context);
       }
     }
-  }
 
-  function drawX(canvas, context) {
-    context.strokeStyle = "#f0ad4e";
-    var position1 = canvas.width * 0.25;
-    var position2 = canvas.width * 0.75;
-    var drawSpeed = 3;
-
-    for (var incrementToPos2 = position1; incrementToPos2 < position2; incrementToPos2++) {
-      setTimeout(function () {
-        context.beginPath();
-        context.moveTo(position1, position1);
-        context.lineTo(incrementToPos2, incrementToPos2);
-        context.stroke();
-      }, incrementToPos2 * drawSpeed);
+    function drawX(canvas, context) {
+      var position1 = canvas.width * 0.25;
+      var position2 = canvas.width * 0.75;
+      var pos1Copy = position1;
+      var pos2Copy = position2;
+      var drawSpeed = 3;
+      // First diagnoal line: top left to bottom right
+      for (var i = position1; i < position2; i++) {
+        setTimeout(function () {
+          context.beginPath();
+          context.moveTo(position1, position1);
+          context.lineTo(i, i);
+          context.stroke();
+        }, i * drawSpeed);
+      }
+      // Second diagnoal line: bottom left to top right
+      for (var j = position1; j < position2; j++) {
+        setTimeout(function () {
+          context.beginPath();
+          context.moveTo(position1, position2);
+          context.lineTo(pos1Copy, pos2Copy);
+          context.stroke();
+          pos1Copy++;
+          pos2Copy--;
+        }, j * drawSpeed);
+      }
     }
 
-    var pos1Copy = position1;
-    var pos2Copy = position2;
-
-    for (incrementToPos2 = position1; incrementToPos2 < position2; incrementToPos2++) {
-      setTimeout(function () {
-        context.beginPath();
-        context.moveTo(position1, position2);
-        context.lineTo(pos1Copy, pos2Copy);
-        context.stroke();
-        pos1Copy++;
-        pos2Copy--;
-      }, incrementToPos2 * drawSpeed);
-    }
-  }
-
-  function drawO(canvas, context) {
-    context.strokeStyle = "#337ab7";
-    var centerX = canvas.width * 0.5;
-    var centerY = canvas.height * 0.5;
-    var radius = canvas.width * 0.25;
-    var startAngle = 6.25;
-
-    for (var i = 6.25; i > 0; i = i - 0.05) {
-      setTimeout(function () {
-        context.beginPath();
-        context.arc(centerX, centerY, radius, startAngle, (2 * Math.PI));
-        context.stroke();
-        startAngle = startAngle - 0.1;
-      }, i * 150);
+    function drawO(canvas, context) {
+      var center = canvas.width * 0.5;
+      var radius = canvas.width * 0.25;
+      var startAngle = 6.25;
+      for (var i = 6.25; i > 0; i = i - 0.05) {
+        setTimeout(function () {
+          context.beginPath();
+          context.arc(center, center, radius, startAngle, (2 * Math.PI));
+          context.stroke();
+          startAngle = startAngle - 0.1;
+        }, i * 150);
+      }
     }
   }
 

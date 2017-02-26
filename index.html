@@ -10,121 +10,121 @@
 </head>
 
 <body>
-<div class="container">
+  <div class="container">
 
-  <div class="dialogueBox startScreen">
+    <div class="dialogueBox startScreen">
 
-    <div class="introUtility">
-      <div class="row">
-        <div class="col-md-12">
-          <h1 class="title">Tic Tac Toe</h1>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-4">
-          <h2 class="startScreenmarkerX">X's</h2>
-          <div class="radio">
-            <div class="radioBtn-warning">
-              <input type="radio" name="radio" id="player1Human"/>
-              <label for="player1Human">Human</label>
-            </div>
-            <div class="radioBtn-warning">
-              <input type="radio" name="radio" id="player1Computer" />
-              <label for="player1Computer">Computer</label>
-            </div>
+      <div class="introUtility">
+        <div class="row">
+          <div class="col-md-12">
+            <h1 class="title">Tic Tac Toe</h1>
           </div>
         </div>
 
-        <div class="col-md-4">
-          <h2 class="versus">Vs.</h4>
+        <div class="row">
+          <div class="col-md-4">
+            <h2 class="startScreenMarkerX">X's</h2>
+            <div class="radio">
+              <div class="radioBtn-warning">
+                <input type="radio" name="radio" id="player1Human" />
+                <label for="player1Human">Human</label>
+              </div>
+              <div class="radioBtn-warning">
+                <input type="radio" name="radio" id="player1Computer" />
+                <label for="player1Computer">Computer</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <h2 class="versus">Vs.</h4>
           </div>
           <div class="col-md-4">
-            <h2 class="startScreenmarkerO">O's</h2>
-          <div class="radio">
-            <div class="radioBtn-primary">
-              <input type="radio" name="radio2" id="player2Human"/>
-              <label for="player2Human">Human</label>
-            </div>
-            <div class="radioBtn-primary">
-              <input type="radio" name="radio2" id="player2Computer" />
-              <label for="player2Computer">Computer</label>
+            <h2 class="startScreenMarkerO">O's</h2>
+            <div class="radio">
+              <div class="radioBtn-primary">
+                <input type="radio" name="radio2" id="player2Human" />
+                <label for="player2Human">Human</label>
+              </div>
+              <div class="radioBtn-primary">
+                <input type="radio" name="radio2" id="player2Computer" />
+                <label for="player2Computer">Computer</label>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="row">
-        <div class="col-md-12">
-          <button class="startGame btn btn-lg btn-block btn-success disabled">Start</button>
-          <button class="viewSource btn btn-sm btn-link">
+        <div class="row">
+          <div class="col-md-12">
+            <button class="startGame btn btn-lg btn-block btn-success disabled">Start</button>
+            <button class="viewSource btn btn-sm btn-link">
               <a href="https://github.com/VitaC123/Tic-Tac-Toe-javascript">View source on GitHub</a>
             </button>
+          </div>
         </div>
       </div>
-    </div>
-    <!-- /introUtility -->
+      <!-- /introUtility -->
 
-    <div class="scoreboard">
-      <div class="row">
-        <div class="col-sm-4">
-          <h4 class="score">Game no. 1<br>X's 0, O's 0</h4>
-        </div>
-        <div class="col-sm-4">
-          <h3 class="messageToPlayer">X's, <span class="actionWord">go!</span></h3>
-        </div>
-        <div class="col-sm-4">
-          <button class="playAgain btn btn-info disabled">Play again</button>
-          <button class="resetGame btn btn-danger">Reset</button>
+      <div class="scoreboardUtility">
+        <div class="row">
+          <div class="col-sm-4">
+            <h4 class="score">Game no. 1<br>X's 0, O's 0</h4>
+          </div>
+          <div class="col-sm-4">
+            <h3 class="messageToPlayer">X's, <span class="actionWord">go!</span></h3>
+          </div>
+          <div class="col-sm-4">
+            <button class="playAgain btn btn-info disabled">Play again</button>
+            <button class="resetGame btn btn-danger">Reset</button>
+          </div>
         </div>
       </div>
+      <!-- /scoreboardUtility -->
     </div>
-    <!-- /scoreboard -->
-  </div>
-  <!-- dialogueBox -->
+    <!-- dialogueBox -->
 
-  <div class="row">
-    <div class="col-md-12">
-      <table>
-        <tr>
-          <td class="gameSquare">
-            <canvas></canvas>
-          </td>
-          <td class="gameSquare">
-            <canvas></canvas>
-          </td>
-          <td class="gameSquare">
-            <canvas></canvas>
-          </td>
-        </tr>
-        <tr>
-          <td class="gameSquare">
-            <canvas></canvas>
-          </td>
-          <td class="gameSquare">
-            <canvas></canvas>
-          </td>
-          <td class="gameSquare">
-            <canvas></canvas>
-          </td>
-        </tr>
-        <tr>
-          <td class="gameSquare">
-            <canvas></canvas>
-          </td>
-          <td class="gameSquare">
-            <canvas></canvas>
-          </td>
-          <td class="gameSquare">
-            <canvas></canvas>
-          </td>
-        </tr>
-      </table>
+    <div class="row">
+      <div class="col-md-12">
+        <table>
+          <tr>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+          </tr>
+          <tr>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+          </tr>
+          <tr>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+            <td class="gameSquare">
+              <canvas></canvas>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
-  </div>
 
-</div>
-<!-- /container -->
+  </div>
+  <!-- /container -->
 
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
   <script src="index.js"></script>
