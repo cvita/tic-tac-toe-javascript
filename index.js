@@ -39,10 +39,10 @@
     },
     determineScaledHeightForGameSquare: function () {
       return new Promise(function (resolve, reject) {
-        var scaledHeight = Math.floor($(window).width() * 0.25);
-        if (scaledHeight * 4 > $(window).height()) {
-          scaledHeight = Math.floor($(window).height() * 0.23);
-          console.log(scaledHeight, $(window).height());
+        var scaledHeight = Math.floor($(window).height() * 0.23);
+        if (scaledHeight * 4 > $(window).width()) {
+          scaledHeight = Math.floor($(window).width() * 0.25);
+          console.log("Adjusting height based on width");
         }
         if (scaledHeight > 240) {
           scaledHeight = 240;
