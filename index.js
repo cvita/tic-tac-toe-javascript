@@ -15,57 +15,61 @@
     score: 0
   };
 
-  var gameboard = {
-    activeGame: false,
-    currentPlayer: player2, // Prompts Player 1 for game's first move
-    numberOfGames: 1,
-    availablePositions: [0, 1, 2, 3, 4, 5, 6, 7, 8],
-    winningCombos: [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6]
-    ],
-    adjustGameboardSize: function () {
-      this.determineScaledHeightForGameSquare().then(function (result) {
-        return gameboard.applyScaledHeightToGameSquare(result);
-      }).then(function (result) {
-        gameboard.applyScaledHeightToCanvas(result);
-      });
-    },
-    determineScaledHeightForGameSquare: function () {
-      return new Promise(function (resolve, reject) {
-        var scaledHeight = Math.floor($(window).height() * 0.25);
-        if ($(".scoreboardScreen").height()) {
-          scaledHeight = scaledHeight - Math.ceil($(".scoreboardScreen").height() / 3);
-        }
-        if (scaledHeight * 4 > $(window).width()) {
-          scaledHeight = Math.floor($(window).width() * 0.25);
-        }
-        if (scaledHeight) {
+  var gameboard = createNewInstanceOfGameboard();
+
+  function createNewInstanceOfGameboard() {
+    return {
+      activeGame: true,
+      currentPlayer: player2, // Prompts Player 1 for game's first move
+      numberOfGames: 1,
+      availablePositions: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      winningCombos: [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+      ],
+      adjustGameboardSize: function () {
+        this.determineScaledHeightForGameSquare().then(function (result) {
+          return gameboard.applyScaledHeightToGameSquare(result);
+        }).then(function (result) {
+          gameboard.applyScaledHeightToCanvas(result);
+        });
+      },
+      determineScaledHeightForGameSquare: function () {
+        return new Promise(function (resolve, reject) {
+          var scaledHeight = Math.floor($(window).height() * 0.25);
+          if ($(".scoreboardScreen").height()) {
+            scaledHeight = scaledHeight - Math.ceil($(".scoreboardScreen").height() / 3);
+          }
+          if (scaledHeight * 4 > $(window).width()) {
+            scaledHeight = Math.floor($(window).width() * 0.25);
+          }
+          if (scaledHeight) {
+            resolve(scaledHeight);
+          } else {
+            reject("Unable to determine scaledHeight");
+          }
+        });
+      },
+      applyScaledHeightToGameSquare: function (scaledHeight) {
+        return new Promise(function (resolve, reject) {
+          $(".gameSquare").height(scaledHeight);
           resolve(scaledHeight);
-        } else {
-          reject("Unable to determine scaledHeight");
-        }
-      });
-    },
-    applyScaledHeightToGameSquare: function (scaledHeight) {
-      return new Promise(function (resolve, reject) {
-        $(".gameSquare").height(scaledHeight);
-        resolve(scaledHeight);
-      });
-    },
-    applyScaledHeightToCanvas: function (scaledHeight) {
-      return new Promise(function (resolve, reject) {
-        $("canvas").width(scaledHeight);
-        resolve("Resized");
-      });
+        });
+      },
+      applyScaledHeightToCanvas: function (scaledHeight) {
+        return new Promise(function (resolve, reject) {
+          $("canvas").width(scaledHeight);
+          resolve("Resized");
+        });
+      }
     }
-  };
+  }
 
   $(document).ready(function () {
     gameboard.adjustGameboardSize();
@@ -95,13 +99,12 @@
 
   $(".startGame").click(function () {
     if (!$(this).hasClass("disabled")) {
-      clearGameboardForNewGame();
-      gameboard.activeGame = true;
+      gameboard = null;
+      gameboard = createNewInstanceOfGameboard();
       $(".introUtility").slideUp("slow");
       $(".dialogueBox").removeClass("startScreen").addClass("scoreboardScreen");
       $(".scoreboardUtility").slideDown("slow", function () {
         $(".gameSquare").css("border-color", "grey");
-        $("canvas").css("visibility", "visible");
         displayScore();
         gameboard.adjustGameboardSize();
         setTimeout(cycleActivePlayer, 800);
@@ -115,9 +118,11 @@
       $(this).addClass("disabled").addClass("btn-info").removeClass("btn-success");
       clearGameboardForNewGame();
       gameboard.numberOfGames++;
-      gameboard.activeGame = true;
+      var scoreTempPlaceholder = gameboard.numberOfGames;
+      gameboard = null;
+      gameboard = createNewInstanceOfGameboard();
+      gameboard.numberOfGames = scoreTempPlaceholder;
       $(".gameSquare").css("border-color", "grey");
-      $("canvas").css("visibility", "visible");
       cycleActivePlayer();
       displayScore();
     }
@@ -128,7 +133,6 @@
     player2.player = null;
     player1.score = 0;
     player2.score = 0;
-    gameboard.numberOfGames = 0;
     $(".dialogueBox").removeClass("scoreboardScreen").addClass("startScreen");
     $(".scoreboardUtility").hide("fast", function () {
       $(".introUtility").slideDown("slow", function () {
@@ -140,14 +144,12 @@
   });
 
   function clearGameboardForNewGame() {
+    clearAllCanvasElements();
     player1.moves = [];
     player2.moves = [];
     gameboard.activeGame = false;
-    gameboard.availablePositions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-    gameboard.currentPlayer = player2;
-    clearAllCanvasElements();
-    $("input").prop("checked", false);
     $(".gameSquare").css("border-color", "white");
+    $("input").prop("checked", false);
   }
 
   function displayScore() {
@@ -187,7 +189,7 @@
       gameboard.availablePositions[locationOfMove] = null;
       gameboard.currentPlayer.moves.push(locationOfMove);
       drawMarker(locationOfMove);
-      scanForWinningCombo();
+      setTimeout(scanForWinningCombo, 800);
     }
 
     function determineOffensiveMove(currentPlayer) {
@@ -275,7 +277,7 @@
       gameboard.currentPlayer = player1;
     }
     if (gameboard.currentPlayer.player === "computer") {
-      setTimeout(makeComputerMove, 1150);
+      setTimeout(makeComputerMove, 400);
     }
     $(".actionWord").removeClass("actionWordVisible");
     $(".messageToPlayer").html(gameboard.currentPlayer.marker.toUpperCase() +
@@ -310,21 +312,25 @@
       // First diagnoal line: top left to bottom right
       for (var i = position1; i < position2; i++) {
         setTimeout(function () {
-          context.beginPath();
-          context.moveTo(position1, position1);
-          context.lineTo(i, i);
-          context.stroke();
+          if (gameboard.activeGame) {
+            context.beginPath();
+            context.moveTo(position1, position1);
+            context.lineTo(i, i);
+            context.stroke();
+          }
         }, i * drawSpeed);
       }
       // Second diagnoal line: bottom left to top right
       for (var j = position1; j < position2; j++) {
         setTimeout(function () {
-          context.beginPath();
-          context.moveTo(position1, position2);
-          context.lineTo(pos1Copy, pos2Copy);
-          context.stroke();
-          pos1Copy++;
-          pos2Copy--;
+          if (gameboard.activeGame) {
+            context.beginPath();
+            context.moveTo(position1, position2);
+            context.lineTo(pos1Copy, pos2Copy);
+            context.stroke();
+            pos1Copy++;
+            pos2Copy--;
+          }
         }, j * drawSpeed);
       }
     }
@@ -335,10 +341,12 @@
       var startAngle = 6.25;
       for (var i = 6.25; i > 0; i = i - 0.05) {
         setTimeout(function () {
-          context.beginPath();
-          context.arc(center, center, radius, startAngle, (2 * Math.PI));
-          context.stroke();
-          startAngle = startAngle - 0.1;
+          if (gameboard.activeGame) {
+            context.beginPath();
+            context.arc(center, center, radius, startAngle, (2 * Math.PI));
+            context.stroke();
+            startAngle = startAngle - 0.1;
+          }
         }, i * 150);
       }
     }
@@ -350,6 +358,5 @@
       var context = canvas.getContext("2d");
       context.clearRect(0, 0, canvas.width, canvas.height);
     }
-    $("canvas").css("visibility", "hidden");
   }
 })();
