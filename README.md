@@ -13,7 +13,7 @@ I began this project as part of the [freeCodeCamp](https://github.com/freeCodeCa
 ### Additional features:
 * Animated X's and O's using ````<canvas>````
 * Completely responsive design. Looks great on desktops and mobile devices.  
-<img src='./demo-assets/tic-tac-toe-demo-responsive-60fps.gif' style="width: 300px;" alt="responsive design demo"/>
+![responsive demo](./demo-assets/responsive-demo.gif "Responsive demo")
 * Ability to pit the computer against itself.
 * A 'start' screen that seamlessly morphs into a scoreboard, and vice versa.  
-<img src='./demo-assets/tic-tac-toe-scoreboard-demo-60fps.gif' style="width: 300px;" alt="scoreboard animation demo"/>
+!['Start' screen animation demo](./demo-assets/scoreboard-demo.gif "'Start' screen animation demo")
